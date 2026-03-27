@@ -7,9 +7,10 @@ import {
   collection, getDocs, addDoc, updateDoc, doc, deleteDoc,
   query, orderBy, limit, getDoc
 } from "firebase/firestore";
-import { signOut, onAuthStateChanged } from "firebase/auth";
+import { signOut, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "../../loading/loadingSpinner";
+import { usePasscodeGate, PasscodeGate } from "../usePasscodeGate";
 import dynamic from "next/dynamic";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -19,6 +20,7 @@ export default function AdminContent() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const passcodeGate = usePasscodeGate();
 
   // Notices
   const [noticeText, setNoticeText] = useState("");
@@ -29,19 +31,20 @@ export default function AdminContent() {
   const [concert, setConcert] = useState({ venue: "", date: "", time: "", location: "", ticketURL: "" });
   const [concerts, setConcerts] = useState([]);
   const [editingConcert, setEditingConcert] = useState(null);
-  // const [ticketURL, setTicketURL] = useState("");
 
-  /* ────── AUTH ────── */
+  // Archived Concerts
+  const [archivedConcerts, setArchivedConcerts] = useState([]);
+  const [editingArchived, setEditingArchived] = useState(null);
+
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (user) => {
-      if (!user) { router.push("/"); return; }
-      const snap = await getDoc(doc(db, "users", user.uid));
-      if (!snap.exists() || snap.data().role !== "admin") { router.push("/"); return; }
-      await Promise.all([fetchNotices(), fetchConcerts()]);
+    if (!passcodeGate.verified) return;
+    const load = async () => {
+      if (!auth.currentUser) await signInAnonymously(auth);
+      await Promise.all([fetchNotices(), fetchConcerts(), fetchArchivedConcerts()]);
       setLoading(false);
-    });
-    return () => unsub && unsub();
-  }, [router]);
+    };
+    load();
+  }, [passcodeGate.verified]);
 
   const fmt = (ts) => {
     if (!ts) return "—";
@@ -132,6 +135,40 @@ export default function AdminContent() {
     fetchConcerts();
   };
 
+  const archiveConcert = async (concertData) => {
+    const { id, createdAt, ...data } = concertData;
+    await addDoc(collection(db, "pastConcerts"), {
+      ...data,
+      archivedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+    });
+    await deleteDoc(doc(db, "upcomingConcerts", id));
+    await Promise.all([fetchConcerts(), fetchArchivedConcerts()]);
+  };
+
+  const fetchArchivedConcerts = async () => {
+    const q = query(collection(db, "pastConcerts"), orderBy("createdAt", "desc"), limit(20));
+    const snap = await getDocs(q);
+    setArchivedConcerts(snap.docs.map(d => ({ id: d.id, ...d.data(), createdAt: fmt(d.data().createdAt) })));
+  };
+
+  const updateArchivedConcert = async () => {
+    if (!editingArchived) return;
+    const { id, venue, date, time, location } = editingArchived;
+    if (!venue || !date) return setError("Venue and date are required");
+    await updateDoc(doc(db, "pastConcerts", id), {
+      venue, date, time: time || "", location: location || "",
+      updatedAt: new Date().toISOString()
+    });
+    setEditingArchived(null);
+    fetchArchivedConcerts();
+  };
+
+  const deleteArchivedConcert = async (id) => {
+    await deleteDoc(doc(db, "pastConcerts", id));
+    fetchArchivedConcerts();
+  };
+
   const handleDateChange = (date) => {
     if (!date) {
       setConcert(p => ({ ...p, date: "", time: "" }));
@@ -141,6 +178,10 @@ export default function AdminContent() {
     const t = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
     setConcert(p => ({ ...p, date: d, time: t }));
   };
+
+  if (!passcodeGate.verified) {
+    return <PasscodeGate gate={passcodeGate} />;
+  }
 
   if (loading) {
     return (
@@ -373,6 +414,12 @@ export default function AdminContent() {
                         </div>
                         <div className="flex gap-2">
                           <button
+                            onClick={() => archiveConcert(c)}
+                            className="bg-amber-600 hover:bg-amber-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
+                          >
+                            Archive
+                          </button>
+                          <button
                             onClick={() => setEditingConcert({ id: c.id, ...c })}
                             className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
                           >
@@ -380,6 +427,89 @@ export default function AdminContent() {
                           </button>
                           <button
                             onClick={() => deleteConcert(c.id)}
+                            className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* ────── ARCHIVED CONCERTS ────── */}
+          <section className="mb-12">
+            <h2 className="text-3xl font-serif mb-4 text-amber-400">Archived Concerts</h2>
+            {archivedConcerts.length === 0 ? (
+              <p className="text-gray-300 italic">No archived concerts.</p>
+            ) : (
+              <div className="space-y-4">
+                {archivedConcerts.map((c, i) => (
+                  <div
+                    key={c.id}
+                    className="bg-gray-800/90 backdrop-blur p-5 rounded-xl flex justify-between items-start gap-3 fade"
+                    style={{ animationDelay: `${i * 80}ms` }}
+                  >
+                    {editingArchived?.id === c.id ? (
+                      <div className="flex-1 space-y-2">
+                        <input
+                          value={editingArchived.venue}
+                          onChange={e => setEditingArchived(p => ({ ...p, venue: e.target.value }))}
+                          placeholder="Venue"
+                          className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-amber-500"
+                        />
+                        <input
+                          value={editingArchived.date}
+                          onChange={e => setEditingArchived(p => ({ ...p, date: e.target.value }))}
+                          placeholder="Date"
+                          className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-amber-500"
+                        />
+                        <input
+                          value={editingArchived.time || ""}
+                          onChange={e => setEditingArchived(p => ({ ...p, time: e.target.value }))}
+                          placeholder="Time"
+                          className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-amber-500"
+                        />
+                        <input
+                          value={editingArchived.location || ""}
+                          onChange={e => setEditingArchived(p => ({ ...p, location: e.target.value }))}
+                          placeholder="Location"
+                          className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-amber-500"
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={updateArchivedConcert}
+                            className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={() => setEditingArchived(null)}
+                            className="bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div>
+                          <p className="font-bold">{c.venue}</p>
+                          <p className="text-sm text-gray-300">{c.date} {c.time ? `@ ${c.time}` : ""} {c.location ? `– ${c.location}` : ""}</p>
+                          <p className="text-xs text-gray-400 mt-1">Archived: {c.createdAt}</p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setEditingArchived({ id: c.id, ...c })}
+                            className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => deleteArchivedConcert(c.id)}
                             className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
                           >
                             Delete

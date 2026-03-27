@@ -5,15 +5,9 @@ import ConcertCard from "./components/ConcertCards"; // Ensure this path is corr
 import { db } from "./firebaseConfig"; // Ensure this import and config are correct
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 
-import { Great_Vibes } from "next/font/google";
 import HeroSection from "./components/HeroSection";
 import Footer from "./components/Footer/footer";
-
-const greatVibes = Great_Vibes({
-  subsets: ["latin"],
-  weight: "400", // ✅ only available weight
-  variable: "--font-great-vibes",
-});
+import LineageTree from "./components/LineageTree";
 
 //Images for Hero Section(Slideshow)
 const heroImages = [
@@ -22,13 +16,7 @@ const heroImages = [
   '/anirban02.jpg',
   '/anirban03.jpg',
   '/anirbanda.jpg',
-  // '/background-7.jpg',
-  // '/background-8.jpg',
 ];
-
-
-
-
 
 // Utility function to format date
 const formatDate = (date) => {
@@ -53,6 +41,7 @@ const formatDate = (date) => {
 
 export default function Portfolio() {
   const [concerts, setConcerts] = useState([]);
+  const [pastConcerts, setPastConcerts] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true); // Added loading state
 
@@ -79,40 +68,36 @@ export default function Portfolio() {
         setIsLoading(false); // Set loading to false once fetch is complete (or failed)
       }
     };
+
+    const fetchPastConcerts = async () => {
+      try {
+        const pastQuery = query(
+          collection(db, "pastConcerts"),
+          orderBy("createdAt", "desc")
+        );
+        const pastSnapshot = await getDocs(pastQuery);
+        const pastData = pastSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+          date: formatDate(doc.data().date),
+        }));
+        setPastConcerts(pastData);
+      } catch (err) {
+        console.error("Error fetching past concerts:", err);
+      }
+    };
+
     fetchConcerts();
+    fetchPastConcerts();
   }, []);
 
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 text-white">
-        <style jsx>{`
-          @keyframes fadeIn {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-          }
-          .animate-fade-in {
-            animation: fadeIn 2s ease-in-out forwards;
-          }
-          @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-          }
-          .animate-pulse-card {
-            animation: pulse 13s ease-in-out infinite;
-          }
-        `}</style>
+      <div className="min-h-screen bg-[#0c0905] text-[#f5efe4]">
 
         {/* Hero Section */}
-        {/* <section className="relative h-screen flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/background.jpg')] bg-cover bg-center opacity-50"></div>
-          <div className="relative z-10 text-center px-4">
-          <h1 className={`text-8xl font-bold mb-4 animate-fade-in font-serif antialiased ${greatVibes.className}`}> Anirban Bhattacharjee </h1>
-            <p className="text-6xl font-palisade font-bold mb-8 animate-fade-in" style={{ animationDelay: '200ms' }}>Pioneer of the Violin in the Senia-Shahjahanpur Gharana</p>
-            <a href="/#about" className="bg-white text-gray-900 px-6 py-3 rounded-full font-semibold hover:bg-opacity-90 transition animate-bounce">Discover My Journey</a>
-          </div>
-        </section> */}
-        <HeroSection 
+        <HeroSection
           images={heroImages}
           title="Anirban Bhattacharjee"
           subtitle="Pioneer of the Violin in the Senia-Shahjahanpur Gharana"
@@ -120,292 +105,239 @@ export default function Portfolio() {
           ctaLink="/#about"
         />
 
-        {/* About Section */}
-        <section id="about" className="py-20 px-4 md:px-20 bg-gray-800">
-          <div className="max-w-5xl mx-auto">
-          <h2 className={`text-6xl md:text-8xl p-4 font-serif font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-pink-500 animate-fade-in antialiased ${greatVibes.className}`}>
-                Biography
-              </h2>
+        {/* Biography Section */}
+        <section id="about" className="bg-[#f5efe4] text-[#1a1209]">
+          <div className="max-w-[980px] mx-auto py-[clamp(44px,8vw,80px)] px-[clamp(22px,6vw,52px)]">
+            <p className="text-[10px] tracking-[0.24em] uppercase text-[#b8922a] font-medium mb-4 flex items-center gap-2.5">
+              <span className="w-5 h-px bg-[#b8922a] inline-block"></span>Biography
+            </p>
+            <h2 className="font-[family-name:var(--font-cormorant)] text-[clamp(2rem,5vw,3.4rem)] font-light leading-[1.12] text-[#1a1209] mb-10">
+              A Voice in String &amp; Rhythm
+            </h2>
 
-            {/* First Paragraph */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 items-center bg-gray-900 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300 animate-pulse-card animate-fade-in" style={{ animationDelay: '200ms' }}>
+            {/* Top row: 1st paragraph + images side by side */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
               <div>
-                <p className="text-lg leading-relaxed text-gray-200 font-light">
-                  Anirban Bhattacharjee is one of the most promising violinists of the young generation in the arena of Hindustani Classical Music, and is among the very few musicians who play Hindustani Classical Music on the viola. His training in music began at the age of three when he started learning the Tabla from his father Jitesh Bhattacharjee. His study of the violin started at age 15 under Shri Ashim Dutta of Guwahati, Assam. Anirban received guidance in advanced techniques of the instrument from Shri Manoj Baruah and the legendary Dr. Sisirkana Dhar Chowdhury of the Senia Maihar Gharana. He is currently a disciple of Shri Supratik Sengupta, a Sitar exponent of the Senia Shahjahanpur Gharana and a disciple of Pandit Buddhadev Dasgupta. Anirban was also under the tutelage of the late Dr. Swarna Khuntia, a senior disciple of Dr. N. Rajam. Anirban’s public performance debut was at the Sri Aurobindo International Centre for Education, Pondicherry.
+                <p className="text-[14px] leading-[1.95] text-[#3d2e1a] font-light">
+                  Anirban Bhattacharjee is one of the most promising violinists of the young generation in the arena of Hindustani Classical Music, and is among the very few musicians who play Hindustani Classical Music on the viola. His training in music began at the age of three when he started learning the Tabla from his father Jitesh Bhattacharjee. His study of the violin started at age 15 under Shri Ashim Dutta of Guwahati, Assam. Anirban received guidance in advanced techniques of the instrument from Shri Manoj Baruah and the legendary Dr. Sisirkana Dhar Chowdhury of the Senia Maihar Gharana. He is currently a disciple of Shri Supratik Sengupta, a Sitar exponent of the Senia Shahjahanpur Gharana and a disciple of Pandit Buddhadev Dasgupta. Anirban was also under the tutelage of the late Dr. Swarna Khuntia, a senior disciple of Dr. N. Rajam. Anirban's public performance debut was at the Sri Aurobindo International Centre for Education, Pondicherry.
+                </p>
+                <p className="text-[14px] leading-[1.95] text-[#3d2e1a] font-light mt-5">
+                  Beside his pursuit of music, Anirban also holds a remarkable record in academics, with a Bachelors degree in Mathematics from St. Xavier's College, Kolkata and a Masters degree in Applied Mathematics from the Chennai Mathematical Institute. Anirban is currently pursuing his PhD from the Tata Institute of Fundamental Research, Mumbai, and is Research Associate and Teaching Fellow at Ashoka University, Sonipat.
                 </p>
               </div>
-              <div className="flex justify-center">
-                <img 
-                  src="/anirban01.jpg" 
-                  alt="Anirban playing violin" 
-                  className="rounded-lg shadow-md w-full max-w-md object-cover transform hover:scale-105 transition-all duration-300" 
-                  onError={(e) => { e.target.src = 'https://via.placeholder.com/400?text=Image+Not+Found'; }}
-                />
+
+              {/* Right column: image grid */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="col-span-1 row-span-2">
+                  <img
+                    src="/anirban01.jpg"
+                    alt="Anirban playing violin"
+                    className="w-full h-full object-cover sepia-[0.08] hover:scale-[1.03] transition-transform duration-500"
+                    onError={(e) => { e.target.src = 'https://via.placeholder.com/400?text=Image+Not+Found'; }}
+                  />
+                </div>
+                <div className="col-span-1">
+                  <img
+                    src="/anirbanda.jpg"
+                    alt="Anirban playing violin"
+                    className="w-full h-full object-cover sepia-[0.08] hover:scale-[1.03] transition-transform duration-500"
+                    onError={(e) => { e.target.src = 'https://via.placeholder.com/400?text=Image+Not+Found'; }}
+                  />
+                </div>
+                <div className="col-span-1">
+                  <img
+                    src="/anirban02.jpg"
+                    alt="Anirban playing violin"
+                    className="w-full h-full object-cover sepia-[0.08] hover:scale-[1.03] transition-transform duration-500"
+                    onError={(e) => { e.target.src = 'https://via.placeholder.com/400?text=Image+Not+Found'; }}
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Second Paragraph */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 items-center bg-gray-900 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300 animate-pulse-card animate-fade-in" style={{ animationDelay: '400ms' }}>
-              <div className="flex justify-center order-2 md:order-1">
-                <img 
-                  src="/anirbanda.jpg" 
-                  alt="Anirban playing violin" 
-                  className="rounded-lg shadow-md w-full max-w-md object-cover transform hover:scale-105 transition-all duration-300" 
-                  onError={(e) => { e.target.src = 'https://via.placeholder.com/400?text=Image+Not+Found'; }}
-                />
-              </div>
-              <div className="order-1 md:order-2">
-                <p className="text-lg leading-relaxed text-gray-200 font-light">
-                  Anirban’s music is a blend of the Tantrakari and Gayaki approaches and bears a strong rhythmic component as a consequence of his initial inclinations to Tabla. Besides being a rapidly rising name in the Hindustani Classical Music scene all over India, Anirban also takes a keen interest in film music and has experience in playing for background scores of films and advertisements, as well as regional independent music in Hindi, Marathi, Punjabi, Bengali, and Assamese. The First Film, featuring Anirban’s violin in its background score, has recently won at the National Film Awards for music in the category of non-feature films.
-                </p>
-              </div>
-            </div>
-
-            {/* Third Paragraph */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 items-center bg-gray-900 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300 animate-pulse-card animate-fade-in" style={{ animationDelay: '600ms' }}>
-              <div>
-                <p className="text-lg leading-relaxed text-gray-200 font-light">
-                  Despite his young age, Anirban has already made an impression as a successful teacher, with students who are registered artists in respectable institutions like All India Radio and Bangladesh Betar, as well as students who have featured in popular platforms like Coke Studio Bangladesh and Zee Bangla Sa Re Ga Ma Pa. Additionally, with the purpose of creating a more educated audience for Indian Classical Music, he co-founded the Upaj group in 2021 with Guitarist Swarnabha Gupta and vocalist Chitrayudh Ghatak. Upaj has already marked its presence in several Indian cities and is looking to expand into newer territories.
-                </p>
-              </div>
-              <div className="flex justify-center">
-                <img 
-                  src="/anirban02.jpg" 
-                  alt="Anirban playing violin" 
-                  className="rounded-lg shadow-md w-full max-w-md object-cover transform hover:scale-105 transition-all duration-300" 
-                  onError={(e) => { e.target.src = 'https://via.placeholder.com/400?text=Image+Not+Found'; }}
-                />
-              </div>
-            </div>
-
-            {/* Fourth Paragraph */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 items-center bg-gray-900 rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300 animate-pulse-card animate-fade-in" style={{ animationDelay: '800ms' }}>
-              <div className="flex justify-center order-2 md:order-1">
-                <img 
-                  src="/anirban03.jpg" 
-                  alt="Anirban playing violin" 
-                  className="rounded-lg shadow-md w-full max-w-md object-cover transform hover:scale-105 transition-all duration-300" 
-                  onError={(e) => { e.target.src = 'https://via.placeholder.com/400?text=Image+Not+Found'; }}
-                />
-              </div>
-              <div className="order-1 md:order-2">
-                <p className="text-lg leading-relaxed text-gray-200 font-light">
-                  Beside his pursuit of music, Anirban also holds a remarkable record in academics, with a Bachelors degree in Mathematics from St. Xavier’s College, Kolkata and a Masters degree in Applied Mathematics from the Chennai Mathematical Institute. Anirban is currently pursuing his PhD from the Tata Institute of Fundamental Research, Mumbai, and is Research Associate and Teaching Fellow at Ashoka University, Sonipat.
-                </p>
-              </div>
+            {/* Below images: paragraphs 2 & 3 side by side with vertical line */}
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_1px_1fr] gap-6 md:gap-8 mt-10">
+              <p className="text-[14px] leading-[1.95] text-[#3d2e1a] font-light">
+                Anirban's music is a blend of the Tantrakari and Gayaki approaches and bears a strong rhythmic component as a consequence of his initial inclinations to Tabla. Besides being a rapidly rising name in the Hindustani Classical Music scene all over India, Anirban also takes a keen interest in film music and has experience in playing for background scores of films and advertisements, as well as regional independent music in Hindi, Marathi, Punjabi, Bengali, and Assamese. The First Film, featuring Anirban's violin in its background score, has recently won at the National Film Awards for music in the category of non-feature films.
+              </p>
+              <div className="hidden md:block bg-[#b8922a]/25"></div>
+              <p className="text-[14px] leading-[1.95] text-[#3d2e1a] font-light">
+                Despite his young age, Anirban has already made an impression as a successful teacher, with students who are registered artists in respectable institutions like All India Radio and Bangladesh Betar, as well as students who have featured in popular platforms like Coke Studio Bangladesh and Zee Bangla Sa Re Ga Ma Pa. Additionally, with the purpose of creating a more educated audience for Indian Classical Music, he co-founded the Upaj group in 2021 with Guitarist Swarnabha Gupta and vocalist Chitrayudh Ghatak. Upaj has already marked its presence in several Indian cities and is looking to expand into newer territories.
+              </p>
             </div>
           </div>
         </section>
 
-        {/* Gurus and Lineage Section */}
-        <section id="gurus" className="py-20 px-4 md:px-20 bg-gradient-to-b from-gray-900 to-gray-900 relative overflow-hidden">
-          {/* Subtle background pattern */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute inset-0 "></div>
-          </div>
-          
-          <div className="relative max-w-5xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className={`text-6xl md:text-8xl p-4 font-serif font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-pink-500 animate-fade-in antialiased ${greatVibes.className}`}>
-                Gurus and Lineage
-              </h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-amber-400 to-pink-500 mx-auto rounded-full mb-8"></div>
-            </div>
+        {/* Gurus & Tradition Section */}
+        <section id="gurus" className="bg-[#1a1209] text-[#f5efe4]">
+          <div className="max-w-[980px] mx-auto py-[clamp(44px,8vw,80px)] px-[clamp(22px,6vw,52px)]">
+            <p className="text-[10px] tracking-[0.24em] uppercase text-[#b8922a] font-medium mb-4 flex items-center gap-2.5">
+              <span className="w-5 h-px bg-[#b8922a] inline-block"></span>Sacred Lineage
+            </p>
+            <h2 className="font-[family-name:var(--font-cormorant)] text-[clamp(2rem,5vw,3.4rem)] font-light leading-[1.12] text-[#f5efe4] mb-10">
+              Gurus &amp; <em>Tradition</em>
+            </h2>
 
-            {/* Enhanced Content Container */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/10 p-8 md:p-12 hover:shadow-amber-500/10 transition-all duration-500 animate-fade-in" style={{ animationDelay: '200ms' }}>
-              
-              {/* Text Content with Better Typography */}
-              <div className="space-y-6">
-                <div className="space-y-4">
-                  {/* <p className="text-lg leading-relaxed text-gray-200 font-light">
-                    Embark on a musical odyssey guided by the luminaries of{' '}
-                    <span className="text-amber-400 font-semibold">Hindustani Classical Music</span>!
-                  </p> */}
-                  <p className="text-gray-300">
-                    Anirban Bhattacharjee's artistry is a tapestry woven from the teachings of revered gurus. From the rhythmic foundations laid by his father,{' '}
-                    <strong className="text-amber-400"> <a target="_blank" href="https://www.facebook.com/jitesh.bhattacharjee/">Jitesh Bhattacharjee</a></strong>, to the intricate violin techniques imparted by{' '}
-                    <strong className="text-pink-400"><a target="_blank" href="https://www.facebook.com/profile.php?id=100052440127869&rdid=PIVCA0F4jOkKzEYl&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F17qCHBxaCx%2F#">Shri Ashim Dutta</a></strong> and{' '}
-                    <strong className="text-purple-400"><a target="_blank" href="https://www.facebook.com/manoj.baruah.524?rdid=iItOiAlOY775fXA2&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1BwADahzom%2F#">Shri Manoj Baruah</a></strong>, each mentor has sculpted his unique sound.
-                  </p>
-                  <p className="text-gray-300">
-                    The legendary <strong className="text-emerald-400"><a target="_blank" href="https://en.wikipedia.org/wiki/Sisir_Kana_Dhar_Chowdhury">Dr. Sisirkana Dhar Choudhury</a></strong> of the Senia Maihar Gharana infused his music with soulful depth, while{' '}
-                    <strong className="text-orange-400"><a target="_blank" href="https://www.facebook.com/supratik.sengupta.79?rdid=z1NnDkePz80g8tmp&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1AEvNtDWRp%2F#">Shri Supratik Sengupta</a></strong> of the Senia Shahjahanpur Gharana added virtuosic finesse. Under the tutelage of the late{' '}
-                    <strong className="text-rose-400"><a href="https://www.facebook.com/swarna.khuntia?rdid=bbatBp9Zq4cEqul3&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1Ccp24UQUi%2F#">Dr. Swarna Khuntia</a></strong>, a disciple of Dr. N. Rajam, Anirban mastered the Gayaki style, blending melody with emotion.
-                  </p>
-                  <p className="text-gray-300 italic">
-                    This illustrious lineage fuels his performances with a celestial spark, resonating across time and tradition.
-                  </p>
-                </div>
-                
-                {/* Read More Button */}
-                <div className="pt-4">
-                  <a 
+            <div>
+              <div className="space-y-6 max-w-[680px]">
+                <p className="text-[14px] leading-[1.95] text-[#f5efe4]/70 font-light">
+                  Anirban Bhattacharjee's artistry is a tapestry woven from the teachings of revered gurus. From the rhythmic foundations laid by his father,{' '}
+                  <strong className="text-[#b8922a]"><a target="_blank" href="https://www.facebook.com/jitesh.bhattacharjee/">Jitesh Bhattacharjee</a></strong>, to the intricate violin techniques imparted by{' '}
+                  <strong className="text-[#b8922a]"><a target="_blank" href="https://www.facebook.com/profile.php?id=100052440127869&rdid=PIVCA0F4jOkKzEYl&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F17qCHBxaCx%2F#">Shri Ashim Dutta</a></strong> and{' '}
+                  <strong className="text-[#b8922a]"><a target="_blank" href="https://www.facebook.com/manoj.baruah.524?rdid=iItOiAlOY775fXA2&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1BwADahzom%2F#">Shri Manoj Baruah</a></strong>, each mentor has sculpted his unique sound.
+                </p>
+                <p className="text-[14px] leading-[1.95] text-[#f5efe4]/70 font-light">
+                  The legendary <strong className="text-[#b8922a]"><a target="_blank" href="https://en.wikipedia.org/wiki/Sisir_Kana_Dhar_Chowdhury">Dr. Sisirkana Dhar Choudhury</a></strong> of the Senia Maihar Gharana infused his music with soulful depth, while{' '}
+                  <strong className="text-[#b8922a]"><a target="_blank" href="https://www.facebook.com/supratik.sengupta.79?rdid=z1NnDkePz80g8tmp&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1AEvNtDWRp%2F#">Shri Supratik Sengupta</a></strong> of the Senia Shahjahanpur Gharana added virtuosic finesse. Under the tutelage of the late{' '}
+                  <strong className="text-[#b8922a]"><a href="https://www.facebook.com/swarna.khuntia?rdid=bbatBp9Zq4cEqul3&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1Ccp24UQUi%2F#">Dr. Swarna Khuntia</a></strong>, a disciple of Dr. N. Rajam, Anirban mastered the Gayaki style, blending melody with emotion.
+                </p>
+                <p className="text-[14px] leading-[1.95] text-[#f5efe4]/50 font-light italic">
+                  This illustrious lineage fuels his performances with a celestial spark, resonating across time and tradition.
+                </p>
+
+                {/* CTA: editorial border button */}
+                <div className="pt-6">
+                  <a
                     href="/gurus-lineage-2"
-                    className="inline-flex items-center bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-400 hover:to-pink-400 text-gray-900 px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-amber-500/25 transition-all duration-300 transform hover:scale-105 group"
+                    className="inline-flex items-center border border-[#b8922a] text-[#b8922a] px-7 py-3 text-[13px] tracking-[0.12em] uppercase font-medium hover:bg-[#b8922a] hover:text-[#1a1209] transition-colors duration-300"
                   >
-                    <span>Read More...</span>
-                    <svg className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    <span>View Full Lineage</span>
+                    <svg className="ml-2.5 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
                   </a>
                 </div>
               </div>
 
-              {/* Enhanced Image Section */}
-              <div className="relative flex justify-center">
-                <div className="relative group">
-                  <img 
-                    src="/Gurus.jpg" 
-                    alt="Anirban's Gurus Lineage" 
-                    className="rounded-xl shadow-xl w-full max-w-md lg:max-w-lg object-cover transform group-hover:scale-105 transition-all duration-500 border-4 border-white/10"
-                    onError={(e) => { e.target.src = 'https://via.placeholder.com/500x400?text=Gurus+Lineage'; }}
-                  />
-                  {/* Decorative overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  {/* Lineage badge */}
-                  <div className="absolute top-4 right-4 bg-amber-500/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold text-gray-900 border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    Sacred Lineage
-                  </div>
-                  {/* Guru icons overlay */}
-                  <div className="absolute bottom-4 left-4 flex space-x-2">
-                    <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
-                    <div className="w-3 h-3 bg-pink-400 rounded-full animate-pulse"></div>
-                    <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
-                    <div className="w-3 h-3 bg-emerald-400 rounded-full"></div>
-                  </div>
-                </div>
-              </div>
             </div>
 
-            {/* Guru Highlights - Small Cards */}
-            {/* <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mt-12">
-              {[
-                { name: "Jitesh Bhattacharjee", color: "bg-amber-500" },
-                { name: "Ashim Dutta", color: "bg-blue-500" },
-                { name: "Manoj Baruah", color: "bg-purple-500" },
-                { name: "Sisir Kana Dhar Choudhury", color: "bg-emerald-500" },
-                { name: "Supratik Sen Gupta", color: "bg-orange-500" },
-                { name: "Swarna Khuntia", color: "bg-rose-500" }
-              ].map((guru, index) => (
-                <div key={index} className={`${guru.color} p-3 rounded-lg text-center text-white text-xs font-medium hover:scale-110 transition-transform duration-300 animate-fade-in`} style={{ animationDelay: `${300 + index * 100}ms` }}>
-                  {guru.name.split(' ').map(word => word.split('')[0]).join('')}
-                </div>
-              ))}
-            </div> */}
+            {/* Lineage Tree */}
+            <div className="mt-14">
+              <LineageTree />
+            </div>
           </div>
         </section>
 
-        {/* Gallery Section */}
-        <section id="playings" className="py-20 px-4 md:px-20 bg-gray-800">
-          <div className="max-w-6xl mx-auto">
-            <h2 className={`text-6xl font-serif font-bold mb-12 text-center bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-pink-500 animate-fade-in p-4 antialiased ${greatVibes.className}`}>Highlights</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Highlights Section */}
+        <section id="playings" className="bg-[#f5efe4] text-[#1a1209]">
+          <div className="max-w-[980px] mx-auto py-[clamp(44px,8vw,80px)] px-[clamp(22px,6vw,52px)]">
+            <p className="text-[10px] tracking-[0.24em] uppercase text-[#b8922a] font-medium mb-4 flex items-center gap-2.5">
+              <span className="w-5 h-px bg-[#b8922a] inline-block"></span>Performances
+            </p>
+            <h2 className="font-[family-name:var(--font-cormorant)] text-[clamp(2rem,5vw,3.4rem)] font-light leading-[1.12] text-[#1a1209] mb-10">
+              Highlights
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               <iframe
-                src="https://www.youtube.com/embed/E84fCd7DsNQ?si=_ZnB4moSiCjEcP8k" 
+                src="https://www.youtube.com/embed/E84fCd7DsNQ?si=_ZnB4moSiCjEcP8k"
                 title="YouTube video player"
-                frameBorder="0"
+                style={{border:0}}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
-                className="w-full aspect-video rounded-lg shadow-lg hover:scale-105 transition transform"
+                className="w-full aspect-video rounded-sm"
               ></iframe>
               <iframe
                 src="https://www.youtube.com/embed/gR7UQY9RdQA?si=FyE8KwgCIq35bls-"
                 title="YouTube video player"
-                frameBorder="0"
+                style={{border:0}}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
-                className="w-full aspect-video rounded-lg shadow-lg hover:scale-105 transition transform"
+                className="w-full aspect-video rounded-sm"
               ></iframe>
               <iframe
                 src="https://www.youtube.com/embed/QvvjFYP8ds0?si=fmBXNCAb81VtlEdB"
                 title="YouTube video player"
-                frameBorder="0"
+                style={{border:0}}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
-                className="w-full aspect-video rounded-lg shadow-lg hover:scale-105 transition transform"
+                className="w-full aspect-video rounded-sm"
               ></iframe>
               <iframe
                 src="https://www.youtube.com/embed/RnKsHJ4BQK8?si=wQkNH2EEBpL7opy_"
                 title="YouTube video player"
-                frameBorder="0"
+                style={{border:0}}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
-                className="w-full aspect-video rounded-lg shadow-lg hover:scale-105 transition transform"
+                className="w-full aspect-video rounded-sm"
               ></iframe>
               <iframe
                 src="https://www.youtube.com/embed/VQHT88wU7zg?si=rNEjNJHdEmm7RD8Y"
                 title="YouTube video player"
-                frameBorder="0"
+                style={{border:0}}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
-                className="w-full aspect-video rounded-lg shadow-lg hover:scale-105 transition transform"
+                className="w-full aspect-video rounded-sm"
               ></iframe>
               <iframe
                 src="https://www.youtube.com/embed/4C_W_D64hqE?si=ulNtVNscn22sJK8n"
                 title="YouTube video player"
-                frameBorder="0"
+                style={{border:0}}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
-                className="w-full aspect-video rounded-lg shadow-lg hover:scale-105 transition transform"
+                className="w-full aspect-video rounded-sm"
               ></iframe>
               <iframe
                 src="https://www.youtube.com/embed/tj1iqaApLfw?si=C_rzckoGuyKFzpH5"
                 title="YouTube video player"
-                frameBorder="0"
+                style={{border:0}}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
-                className="w-full aspect-video rounded-lg shadow-lg hover:scale-105 transition transform"
+                className="w-full aspect-video rounded-sm"
               ></iframe>
               <iframe
-                src="https://www.youtube.com/embed/pSXqfoYHB_0?si=fWcJF299pg4_7yr5" 
+                src="https://www.youtube.com/embed/pSXqfoYHB_0?si=fWcJF299pg4_7yr5"
                 title="YouTube video player"
-                frameBorder="0"
+                style={{border:0}}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
-                className="w-full aspect-video rounded-lg shadow-lg hover:scale-105 transition transform"
+                className="w-full aspect-video rounded-sm"
               ></iframe>
               <iframe
                 src="https://www.youtube.com/embed/S-KMcYPjs5A?si=jQ0ip_u7kTU2CXcf"
                 title="YouTube video player"
-                frameBorder="0"
+                style={{border:0}}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
-                className="w-full aspect-video rounded-lg shadow-lg hover:scale-105 transition transform"
+                className="w-full aspect-video rounded-sm"
               ></iframe>
             </div>
           </div>
         </section>
 
-        {/* Upcoming Events Section */}
-        <section id="events" className="py-20 px-4 md:px-20 bg-gray-900">
-          <div className="max-w-4xl mx-auto">
-            <h2 className={`text-6xl font-serif font-bold mb-12 text-center bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-pink-500 animate-fade-in p-4 antialiased ${greatVibes.className}`}>Upcoming Performances</h2>
-            
-            {/* Added Loading State */}
+        {/* Upcoming Performances Section */}
+        <section id="events" className="bg-[#0c0905]">
+          <div className="max-w-[980px] mx-auto py-[clamp(44px,8vw,80px)] px-[clamp(22px,6vw,52px)]">
+            <p className="text-[10px] tracking-[0.24em] uppercase text-[#b8922a] font-medium mb-4 flex items-center gap-2.5">
+              <span className="w-5 h-px bg-[#b8922a] inline-block"></span>Concerts
+            </p>
+            <h2 className="font-[family-name:var(--font-cormorant)] text-[clamp(2rem,5vw,3.4rem)] font-light italic leading-[1.12] text-[#f5efe4] mb-10">
+              Upcoming Performances
+            </h2>
+
+            {/* Loading State */}
             {isLoading && (
-              <p className="text-gray-300 text-lg italic text-center animate-pulse">
-                Loading performances... 🎻
+              <p className="text-[#f5efe4]/60 text-sm italic text-center">
+                Loading performances...
               </p>
             )}
 
             {error && (
-              <div className="mb-8 p-4 bg-red-900 bg-opacity-80 backdrop-blur-md text-white rounded-xl shadow-lg animate-fade-in">
+              <div className="mb-8 p-4 border border-red-500/30 text-red-400 text-sm">
                 {error}
               </div>
             )}
 
             {!isLoading && concerts.length === 0 ? (
-              <p className="text-gray-300 text-lg italic text-center">No upcoming concerts found.</p>
+              <p className="text-[#f5efe4]/50 text-sm italic text-center">No upcoming concerts found.</p>
             ) : (
               <div className="space-y-6">
                 {concerts.map((concert, index) => (
@@ -413,7 +345,7 @@ export default function Portfolio() {
                     key={concert.id}
                     venue={concert.venue}
                     date={concert.date}
-                    time = {concert.time}
+                    time={concert.time}
                     location={concert.location}
                     ticketURL={concert?.ticketURL}
                     style={{ animationDelay: `${index * 100}ms` }}
@@ -424,12 +356,44 @@ export default function Portfolio() {
           </div>
         </section>
 
-        {/* Contact Section */}
-              {/* Contact Footer Section */}
-      <section id="contact" className="py-20 px-4 md:px-20 bg-gray-800">
+        {/* Previous Performances Section */}
+        <section className="bg-[#f5efe4] text-[#1a1209]">
+          <div className="max-w-[980px] mx-auto py-[clamp(44px,8vw,80px)] px-[clamp(22px,6vw,52px)]">
+            <p className="text-[10px] tracking-[0.24em] uppercase text-[#b8922a] font-medium mb-4 flex items-center gap-2.5">
+              <span className="w-5 h-px bg-[#b8922a] inline-block"></span>Archive
+            </p>
+            <h2 className="font-[family-name:var(--font-cormorant)] text-[clamp(2rem,5vw,3.4rem)] font-light italic leading-[1.12] text-[#1a1209] mb-10">
+              Previous Performances
+            </h2>
 
-        <Footer />
-      </section>
+            {pastConcerts.length === 0 ? (
+              <p className="text-[#3d2e1a]/50 text-sm italic">No previous concerts found.</p>
+            ) : (
+              <div>
+                {pastConcerts.map((concert) => (
+                  <div
+                    key={concert.id}
+                    className="py-4 flex justify-between items-center border-b border-[#1a1209]/10"
+                  >
+                    <span className="font-[family-name:var(--font-cormorant)] text-[#1a1209] text-lg">
+                      {concert.venue}
+                    </span>
+                    <span className="text-[#b8922a] text-xs tracking-wider">
+                      {concert.date}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Contact Footer Section */}
+        <section id="contact" className="bg-[#1a1209]">
+          <div className="py-[clamp(44px,8vw,80px)] px-[clamp(22px,6vw,52px)]">
+            <Footer />
+          </div>
+        </section>
       </div>
     </>
   );

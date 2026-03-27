@@ -1,18 +1,14 @@
 // components/HeroSection.jsx
-'use client'; 
+'use client';
 
 import React, { useState, useEffect } from 'react';
-// Import your font definition here if needed, or pass the class name as a prop
-// Assuming greatVibes is defined globally or passed down if necessary.
 import { Great_Vibes } from "next/font/google";
 
 const greatVibes = Great_Vibes({
   subsets: ["latin"],
-  weight: "400", // ✅ only available weight
+  weight: "400",
   variable: "--font-great-vibes",
 });
-
-
 
 /**
  * HeroSection Component
@@ -24,9 +20,9 @@ const greatVibes = Great_Vibes({
  * @param {string} [props.ctaLink] - URL for the Call-to-Action button.
  * @param {string} [props.ctaText] - Text for the Call-to-Action button.
  */
-export default function HeroSection({ 
-    images, 
-    title = "Anirban Bhattacharjee", 
+export default function HeroSection({
+    images,
+    title = "Anirban Bhattacharjee",
     subtitle = "Pioneer of the Violin in the Senia-Shahjahanpur Gharana",
     ctaLink = "/#about",
     ctaText = "Discover My Journey"
@@ -37,68 +33,95 @@ export default function HeroSection({
   useEffect(() => {
     if (!images || images.length === 0) return;
 
-    // Set up the interval to change the image every 3 seconds
     const intervalId = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => 
+      setCurrentImageIndex((prevIndex) =>
         (prevIndex + 1) % images.length
       );
     }, slideDuration);
 
-    // Clean up the interval when the component unmounts
     return () => clearInterval(intervalId);
-  }, [images, slideDuration]); // Re-run effect if image list changes
+  }, [images, slideDuration]);
 
   // Handle case where no images are provided
   if (!images || images.length === 0) {
-      console.warn("HeroSection: No images provided for the slideshow.");
-      // You can return a fallback design or null here
       return (
-          <section className="h-screen flex items-center justify-center bg-gray-900">
-              <h2 className="text-white text-3xl">Loading Hero Content...</h2>
+          <section className="h-screen flex items-end justify-start bg-[#0c0905]">
+              <h2 className="text-[#f5efe4] text-3xl px-12 pb-24">Loading Hero Content...</h2>
           </section>
       );
   }
 
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden">
-      
+    <section className="relative h-screen flex items-end overflow-hidden">
+
       {/* Background Slideshow Container */}
       <div className="absolute inset-0">
         {images.map((image, index) => (
           <div
             key={index}
             className={`
-              absolute inset-0 bg-cover bg-center transition-opacity duration-1000 
-              ${index === currentImageIndex ? 'opacity-50' : 'opacity-0'}
+              absolute inset-0 bg-cover bg-center transition-opacity duration-1000
+              ${index === currentImageIndex ? 'opacity-[0.42]' : 'opacity-0'}
             `}
-            style={{ 
+            style={{
               backgroundImage: `url('${image}')`,
-              // Optional: Ensure text is readable against various backgrounds
-              backgroundColor: 'rgba(0, 0, 0, 0.5)', 
-              backgroundBlendMode: 'multiply' 
             }}
           />
         ))}
       </div>
-      
-      {/* Content Overlay */}
-      <div className="relative z-10 text-center px-4 text-white"> 
-        {/* Note: I'm omitting the specific font class (greatVibes.className) 
-             as I don't have access to your local font import. 
-             Replace 'font-serif' with your desired class. 
-        */}
-        <h1 className={`text-8xl font-bold mb-4 animate-fade-in font-serif antialiased ${greatVibes.className}`}>
-             {title}
-        </h1>
-        <p className="text-6xl font-palisade font-bold mb-8 animate-fade-in" style={{ animationDelay: '200ms' }}>
-            {subtitle}
+
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#1a1209]/92 via-[#1a1209]/28 to-transparent" />
+
+      {/* Content Overlay - bottom left aligned */}
+      <div className="relative z-10 max-w-[640px] px-[clamp(22px,6vw,52px)] pb-[clamp(48px,9vw,88px)]">
+
+        {/* Eyebrow */}
+        <p className="text-[10px] tracking-[0.24em] text-[#d4aa4a] font-medium mb-3.5 uppercase animate-fade-in">
+          Hindustani Classical Violin
         </p>
-        <a 
-          href={ctaLink} 
-          className="bg-white text-gray-900 px-6 py-3 rounded-full font-semibold hover:bg-opacity-90 transition animate-bounce"
+
+        {/* Title */}
+        <h1
+          className={`
+            ${greatVibes.className}
+            text-[clamp(3.2rem,9vw,6rem)] font-light italic text-[#f5efe4] leading-[0.97]
+            animate-fade-in-up
+          `}
+        >
+          {title}
+        </h1>
+
+        {/* Subtitle */}
+        <p
+          className="font-[family-name:var(--font-cormorant)] italic text-[clamp(1rem,2.5vw,1.3rem)] text-[#f5efe4]/50 mb-7 mt-3 animate-fade-in-up"
+          style={{ animationDelay: '150ms' }}
+        >
+          {subtitle}
+        </p>
+
+        {/* CTA Button */}
+        <a
+          href={ctaLink}
+          className="
+            inline-block border border-[#b8922a] text-[#b8922a]
+            px-5 py-2.5 text-[10px] font-medium tracking-[0.15em] uppercase
+            hover:bg-[#b8922a] hover:text-[#f5efe4]
+            transition-all duration-300
+            animate-fade-in-up
+          "
+          style={{ animationDelay: '300ms' }}
         >
           {ctaText}
         </a>
+      </div>
+
+      {/* Scroll Hint - bottom right */}
+      <div className="absolute bottom-[clamp(32px,6vw,64px)] right-[clamp(22px,4vw,48px)] z-10 flex flex-col items-center gap-2 animate-fade-in" style={{ animationDelay: '600ms' }}>
+        <span className="text-[9px] tracking-[0.22em] uppercase text-[#f5efe4]/30 font-medium">
+          Scroll
+        </span>
+        <span className="block w-px h-8 bg-[#f5efe4]/20 animate-pulse" />
       </div>
     </section>
   );

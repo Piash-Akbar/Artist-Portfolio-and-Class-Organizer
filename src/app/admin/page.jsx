@@ -14,10 +14,10 @@ import {
   where,
   getDoc,
 } from "firebase/firestore";
-import { signOut, onAuthStateChanged } from "firebase/auth";
+import { signOut, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "../loading/loadingSpinner";
-// import LoadingSpinner from "../loading/loadingSpinner";
+import { usePasscodeGate, PasscodeGate } from "./usePasscodeGate";
 
 export default function AdminDashboard() {
   const [classRequests, setClassRequests] = useState([]);
@@ -28,27 +28,25 @@ export default function AdminDashboard() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const passcodeGate = usePasscodeGate();
   // edit students 
   const [editingStudent, setEditingStudent] = useState(null);
   const [editForm, setEditForm] = useState({ displayName: "", classFee: "" });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        router.push("/");
-        return;
+    if (!passcodeGate.verified) return;
+    const load = async () => {
+      try {
+        if (!auth.currentUser) await signInAnonymously(auth);
+        await Promise.all([fetchRequests(), fetchStudents()]);
+      } catch (e) {
+        setError("Failed to load data: " + e.message);
       }
-      const snap = await getDoc(doc(db, "users", user.uid));
-      if (!snap.exists() || snap.data().role !== "admin") {
-        router.push("/");
-        return;
-      }
-      await Promise.all([fetchRequests(), fetchStudents()]);
       setLoading(false);
-    });
-    return () => unsub && unsub();
-  }, [router]);
+    };
+    load();
+  }, [passcodeGate.verified]);
 
   const fetchRequests = async () => {
     const classQ = query(collection(db, "classesRequests"), where("status", "==", "pending"));
@@ -185,6 +183,10 @@ export default function AdminDashboard() {
       (s.displayName ?? "").toLowerCase().includes(searchQuery.toLowerCase()) ||
       (s.email ?? "").toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (!passcodeGate.verified) {
+    return <PasscodeGate gate={passcodeGate} />;
+  }
 
   if (loading) {
     return (

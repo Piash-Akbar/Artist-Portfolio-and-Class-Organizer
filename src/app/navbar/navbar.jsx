@@ -1,101 +1,115 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+
+const navLinks = [
+  { href: '/', label: 'Home' },
+  { href: '#about', label: 'About' },
+  { href: '/gurus-lineage-2', label: 'Gurus & Lineage' },
+  { href: '/students', label: "Students' Corner" },
+  { href: '#contact', label: 'Contact' },
+];
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 40);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <nav className="bg-gray-800 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex-shrink-0">
-            <Link href="/" className="text-white text-xl font-bold flex items-center gap-2">
-              <img src="/logo_white.png" alt="Logo" className="h-12 w-auto" />
-              <span className="hidden sm:block">Anirban Bhattacharjee</span>
-            </Link>
-          </div>
+    <nav
+      className={`
+        fixed top-0 left-0 right-0 z-50 bg-[#1a1209]/97
+        transition-all duration-300
+        ${scrolled ? 'py-2 px-7 shadow-[0_1px_0_rgba(255,255,255,0.05)]' : 'py-3.5 px-7'}
+      `}
+    >
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-3 group">
+          <img
+            src="/logo_white.png"
+            alt="Logo"
+            className={`w-auto transition-all duration-300 ${scrolled ? 'h-9' : 'h-11'}`}
+          />
+          <span className="hidden sm:block font-[family-name:var(--font-cormorant)] italic text-[#f5efe4] text-lg tracking-wide">
+            A. Bhattacharjee
+          </span>
+        </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
-              <Link href="/" className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-md font-medium">
-                <strong>Home</strong>
-              </Link>
-              <Link href="#about" className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                About
-              </Link>
-              <Link href="/#gurus" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"> 
-                Gurus & Lineage
-              </Link>
-              {/* <Link href="/gallery" className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                Gallery
-              </Link> */}
-              <Link href="/students" className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-md font-medium">
-                <b>Students' Corner</b>
-              </Link>
-              {/* <Link href="/buy-class" className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-md font-medium">
-                <b>Buy a Class</b>
-              </Link> */}
-              <Link href="#contact" className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                Contact
-              </Link>
-            </div>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <div className="md:hidden">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 
-              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
-              aria-controls="mobile-menu"
-              aria-expanded={isOpen}
+        {/* Desktop Links */}
+        <div className="hidden md:flex items-center gap-7">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="
+                relative text-[10px] font-medium tracking-[0.18em] uppercase
+                text-[#f5efe4]/45 hover:text-[#f5efe4] transition-colors duration-300
+                after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px
+                after:bg-[#b8922a] after:transition-all after:duration-300
+                hover:after:w-full
+              "
             >
-              {!isOpen ? (
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              ) : (
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              )}
-            </button>
-          </div>
+              {link.label}
+            </Link>
+          ))}
         </div>
+
+        {/* Mobile Hamburger */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          type="button"
+          className="md:hidden flex flex-col justify-center items-center w-8 h-8 gap-[5px] group"
+          aria-controls="mobile-menu"
+          aria-expanded={isOpen}
+        >
+          <span
+            className={`block w-5 h-px bg-[#f5efe4]/60 transition-all duration-300 origin-center
+              ${isOpen ? 'rotate-45 translate-y-[3px]' : ''}`}
+          />
+          <span
+            className={`block w-5 h-px bg-[#f5efe4]/60 transition-all duration-300
+              ${isOpen ? 'opacity-0' : ''}`}
+          />
+          <span
+            className={`block w-5 h-px bg-[#f5efe4]/60 transition-all duration-300 origin-center
+              ${isOpen ? '-rotate-45 -translate-y-[3px]' : ''}`}
+          />
+        </button>
       </div>
 
       {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden" id="mobile-menu">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <Link href="/" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
-              Home
+      <div
+        id="mobile-menu"
+        className={`
+          md:hidden bg-[#140d05]/98 overflow-hidden transition-all duration-400 ease-in-out
+          ${isOpen ? 'max-h-80 mt-3' : 'max-h-0'}
+        `}
+      >
+        <div className="flex flex-col gap-1 px-4 py-4">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setIsOpen(false)}
+              className="
+                text-[10px] font-medium tracking-[0.18em] uppercase
+                text-[#f5efe4]/45 hover:text-[#f5efe4] transition-colors duration-300
+                py-2.5 border-b border-[#f5efe4]/5
+              "
+            >
+              {link.label}
             </Link>
-            <Link href="#about" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
-              About
-            </Link>
-            <Link href="/#gurus" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"> 
-              Gurus & Lineage
-            </Link>
-            {/* <Link href="/gallery" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
-              Gallery
-            </Link> */}
-            <Link href="/students" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
-              Students' Corner
-            </Link>
-            {/* <Link href="/buy-class" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
-              Buy a Class
-            </Link> */}
-            <Link href="#contact" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
-              Contact
-            </Link>
-          </div>
+          ))}
         </div>
-      )}
+      </div>
     </nav>
   );
 }

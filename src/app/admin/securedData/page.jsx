@@ -16,8 +16,9 @@ import {
   writeBatch,
 } from "firebase/firestore";
 
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { db } from "../../firebaseConfig";
+import { usePasscodeGate, PasscodeGate } from "../usePasscodeGate";
 
 // PDF
 import { jsPDF } from "jspdf";
@@ -74,6 +75,7 @@ const KNOWN_COLLECTIONS = [
 
 export default function DatabaseBrowser() {
   const router = useRouter();
+  const passcodeGate = usePasscodeGate();
 
   const [user, setUser] = useState(null);
   const [selectedCollection, setSelectedCollection] = useState(null);
@@ -101,42 +103,14 @@ export default function DatabaseBrowser() {
   // }, [router]);
 
   useEffect(() => {
-  const unsubscribe = onAuthStateChanged(getAuth(), async (u) => {
-    if (!u) {
-      router.push("/");
-      return;
-    }
-
-    try {
-      // Get the user document from Firestore
-      const userDocRef = doc(db, "users", u.uid);
-      const userSnap = await getDoc(userDocRef);
-
-      if (!userSnap.exists()) {
-        console.log("No user document found for UID:", u.uid);
-        router.push("/");
-        return;
-      }
-
-      const userData = userSnap.data();
-
-      if (userData.role !== "admin") {
-        console.log("User is not admin. Role:", userData.role);
-        router.push("/");
-        return;
-      }
-
-      // If we reach here → user is admin
-      setUser(u);
-      console.log("Admin authenticated as:", u.email || u.uid);
-    } catch (err) {
-      console.error("Error checking admin role:", err);
-      router.push("/");
-    }
-  });
-
-  return () => unsubscribe();
-}, [router]);
+    if (!passcodeGate.verified) return;
+    const load = async () => {
+      const a = getAuth();
+      if (!a.currentUser) await signInAnonymously(a);
+      setUser(a.currentUser || { uid: 'admin' });
+    };
+    load();
+  }, [passcodeGate.verified]);
 
 
 
@@ -278,7 +252,11 @@ export default function DatabaseBrowser() {
     pdfDoc.save(`${selectedCollection}_summary_${new Date().toISOString().split("T")[0]}.pdf`);
   };
 
-  if (!user) return <div className="min-h-screen flex items-center justify-center text-white">Authenticating...</div>;
+  if (!passcodeGate.verified) {
+    return <PasscodeGate gate={passcodeGate} />;
+  }
+
+  if (!user) return <div className="min-h-screen flex items-center justify-center text-white">Loading...</div>;
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100 p-6">

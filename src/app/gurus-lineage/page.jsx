@@ -3,6 +3,7 @@ import { Great_Vibes } from "next/font/google";
 import Navbar from "../navbar/navbar";
 import Link from "next/link";
 import HeroSection from "../components/HeroSection";
+import LineageTree from "../components/LineageTree";
 
 const greatVibes = Great_Vibes({
   subsets: ["latin"],
@@ -133,8 +134,16 @@ export default function GurusLineage() {
           ctaLink="/"
         />
 
-
-
+        {/* Lineage Tree */}
+        <section className="py-16 px-4 md:px-20 bg-gray-900/80">
+          <div className="max-w-6xl mx-auto text-center">
+            <h2 className={`text-5xl md:text-7xl font-serif font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-rose-400 to-purple-500 antialiased ${greatVibes.className}`}>
+              Sacred Parampara
+            </h2>
+            <p className="text-gray-400 italic mb-6">Tracing the musical tradition from legend to student</p>
+            <LineageTree />
+          </div>
+        </section>
 
         {/* Gurus Content */}
         <section className="py-24 px-4 md:px-20 bg-gray-900/50">
@@ -234,16 +243,7 @@ export default function GurusLineage() {
             <h2 className={`text-5xl md:text-7xl font-serif font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-rose-400 to-purple-500 antialiased ${greatVibes.className}`}>
               Sacred Parampara
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-12 max-w-4xl mx-auto">
-              {gurus.map((guru, index) => (
-                <div key={index} className="relative">
-                  <div className="h-2 bg-gradient-to-r from-amber-400 to-rose-500 rounded-full"></div>
-                  {index < gurus.length - 1 && (
-                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-px h-12 bg-white/20"></div>
-                  )}
-                </div>
-              ))}
-            </div>
+            <LineageTree />
             <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
               This sacred lineage weaves through multiple gharanas, each guru contributing unique facets to Anirban's extraordinary musical identity. From rhythmic foundations to raga mastery, vocal expression to sitar aesthetics, this parampara creates performances that transcend tradition while honoring its deepest roots.
             </p>

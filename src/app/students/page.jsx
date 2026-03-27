@@ -42,11 +42,7 @@ export default function LandingPage() {
           });
         } else {
           const userData = docSnap.data();
-          if (userData.role === "admin") {
-            router.push("/admin");
-            setLoading(false);
-            return;
-          }
+          // Admin access is now via passcode at /admin, no redirect needed
         }
 
         setUser(firebaseUser);

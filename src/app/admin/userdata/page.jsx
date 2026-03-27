@@ -7,8 +7,10 @@ import {
   collection, getDocs, query, where, orderBy, limit,
   updateDoc, doc, deleteDoc
 } from "firebase/firestore";
-import { signOut, onAuthStateChanged } from "firebase/auth";
+import { signOut, onAuthStateChanged, signInAnonymously } from "firebase/auth";
+import { auth } from "../../firebaseConfig";
 import LoadingSpinner from "../../loading/loadingSpinner";
+import { usePasscodeGate, PasscodeGate } from "../usePasscodeGate";
 
 const formatDate = (date) => {
   try {
@@ -24,6 +26,7 @@ const formatDate = (date) => {
 export default function UsersDataPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const passcodeGate = usePasscodeGate();
   const [errors, setErrors] = useState([]);
   const [users, setUsers] = useState([]);
   const [notices, setNotices] = useState([]);
@@ -80,11 +83,9 @@ export default function UsersDataPage() {
   };
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (user) => {
-      if (!user) { router.push("/"); return; }
-      const userDoc = await getDocs(query(collection(db, "users"), where("uid", "==", user.uid)));
-      if (!userDoc.docs[0]?.data()?.role === "admin") { router.push("/"); return; }
-
+    if (!passcodeGate.verified) return;
+    const load = async () => {
+      if (!auth.currentUser) await signInAnonymously(auth);
       const usersQ = query(collection(db, "users"), where("role", "==", "student"));
       const usersSnap = await getDocs(usersQ);
       const raw = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -111,21 +112,25 @@ export default function UsersDataPage() {
         if (!a.lastClass) return 1;
         if (!b.lastClass) return -1;
         const da = a.lastClass.rawDate?.toDate?.() || new Date(a.lastClass.rawDate);
-        const db = b.lastClass.rawDate?.toDate?.() || new Date(b.lastClass.rawDate);
-        return db.getTime() - da.getTime();
+        const dbVal = b.lastClass.rawDate?.toDate?.() || new Date(b.lastClass.rawDate);
+        return dbVal.getTime() - da.getTime();
       });
 
       setUsers(withLast);
       await fetchNoticesAndConcerts();
       setLoading(false);
-    });
-    return () => unsub && unsub();
-  }, [router]);
+    };
+    load();
+  }, [passcodeGate.verified]);
 
   const filtered = users.filter(u =>
     u.displayName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     u.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (!passcodeGate.verified) {
+    return <PasscodeGate gate={passcodeGate} />;
+  }
 
   if (loading) {
     return (
