@@ -254,16 +254,28 @@ export default function Portfolio() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {(videos.length > 0 ? videos : fallbackVideos).map((v, i) => (
-                <iframe
+                <div
                   key={v.id || i}
-                  src={v.url}
-                  title={v.title || "YouTube video player"}
-                  style={{border:0}}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen
-                  className="w-full aspect-video rounded-sm"
-                ></iframe>
+                  className="group bg-white rounded-lg shadow-[0_2px_12px_rgba(26,18,9,0.06)] hover:shadow-[0_6px_24px_rgba(184,146,42,0.12)] transition-shadow duration-300 overflow-hidden p-2.5"
+                  onClick={(e) => {
+                    // Remove overlay on click so user can interact with iframe
+                    const overlay = e.currentTarget.querySelector('.iframe-overlay');
+                    if (overlay) overlay.style.display = 'none';
+                  }}
+                >
+                  <div className="relative">
+                    <iframe
+                      src={v.url}
+                      title={v.title || "YouTube video player"}
+                      style={{border:0}}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      allowFullScreen
+                      className="w-full aspect-video rounded-md"
+                    ></iframe>
+                    <div className="iframe-overlay absolute inset-0 rounded-md cursor-pointer"></div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>

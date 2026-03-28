@@ -133,72 +133,104 @@ export default function AnimatedCursor() {
         }}
       />
 
-      {/* Peacock feather quill */}
+      {/* Peacock feather — flipped (eye at bottom, quill tip at top = click point) */}
       <svg
         ref={dotRef}
         style={{
           position: 'fixed',
-          top: -2,
-          left: -2,
-          width: 44,
-          height: 44,
+          top: -4,
+          left: -6,
+          width: 72,
+          height: 72,
           overflow: 'visible',
           filter: hovering
-            ? 'drop-shadow(0 0 8px rgba(212,170,74,0.6))'
-            : 'drop-shadow(0 0 4px rgba(184,146,42,0.35))',
+            ? 'drop-shadow(0 0 8px rgba(212,170,74,0.5))'
+            : 'drop-shadow(0 0 4px rgba(184,146,42,0.3))',
           transition: 'filter 0.3s',
           willChange: 'transform',
         }}
-        viewBox="0 0 44 44"
+        viewBox="0 0 100 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          <radialGradient id="featherEye" cx="50%" cy="45%" r="50%">
-            <stop offset="0%" stopColor="#1a5c3a" />
-            <stop offset="40%" stopColor="#0e7a4a" />
-            <stop offset="65%" stopColor="#b8922a" />
-            <stop offset="100%" stopColor="#d4aa4a" />
+          <radialGradient id="eyeOuter" cx="50%" cy="48%" r="50%">
+            <stop offset="0%" stopColor="#c49a2a" />
+            <stop offset="60%" stopColor="#9a7520" />
+            <stop offset="100%" stopColor="#6b5518" />
           </radialGradient>
-          <linearGradient id="quillShaft" x1="0" y1="0" x2="1" y2="1">
+          <radialGradient id="eyeMiddle" cx="50%" cy="45%" r="50%">
+            <stop offset="0%" stopColor="#d4aa4a" />
+            <stop offset="100%" stopColor="#b8922a" />
+          </radialGradient>
+          <linearGradient id="shaftGrad" x1="0.5" y1="0" x2="0.5" y2="1">
             <stop offset="0%" stopColor="#f5efe4" />
-            <stop offset="40%" stopColor="#d4aa4a" />
+            <stop offset="30%" stopColor="#d4aa4a" />
             <stop offset="100%" stopColor="#8a6c1a" />
-          </linearGradient>
-          <linearGradient id="barbLeft" x1="0" y1="0" x2="0.6" y2="1">
-            <stop offset="0%" stopColor="#b8922a" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="#6b5518" stopOpacity="0.4" />
-          </linearGradient>
-          <linearGradient id="barbRight" x1="1" y1="0" x2="0.4" y2="1">
-            <stop offset="0%" stopColor="#d4aa4a" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="#8a6c1a" stopOpacity="0.4" />
           </linearGradient>
         </defs>
 
-        {/* Feather barbs — left side (broader fan) */}
-        <path d="M8 6 C12 10 14 16 16 20 C12 18 8 14 5 9Z" fill="url(#barbLeft)" opacity="0.7" />
-        <path d="M11 4 C14 8 16 14 17 18 C14 16 11 11 9 6Z" fill="url(#barbLeft)" opacity="0.6" />
-        <path d="M14 3 C16 7 17 12 18 17 C16 14 14 9 13 5Z" fill="url(#barbLeft)" opacity="0.5" />
-        <path d="M6 9 C10 13 13 18 15 22 C11 20 7 16 4 12Z" fill="url(#barbLeft)" opacity="0.55" />
+        {/* Main shaft — quill tip at TOP (click point), curves down to eye */}
+        <path d="M12 4 C14 14 20 34 24 48 C28 60 32 70 30 78" stroke="url(#shaftGrad)" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+        <path d="M12 4 C14 14 20 34 24 48" stroke="#f5efe4" strokeWidth="0.5" strokeLinecap="round" fill="none" opacity="0.35" />
 
-        {/* Feather barbs — right side */}
-        <path d="M22 5 C22 10 20 16 19 20 C21 17 24 12 25 7Z" fill="url(#barbRight)" opacity="0.7" />
-        <path d="M20 4 C20 8 19 13 18 17 C20 14 22 9 22 5Z" fill="url(#barbRight)" opacity="0.6" />
-        <path d="M24 7 C23 12 21 17 20 22 C23 18 25 13 26 9Z" fill="url(#barbRight)" opacity="0.55" />
+        {/* Quill tip — nib at top */}
+        <circle cx="12" cy="3.5" r="1.5" fill="#f5efe4" opacity="0.9" />
 
-        {/* Peacock eye — the signature oval */}
-        <ellipse cx="17" cy="13" rx="5.5" ry="7" fill="url(#featherEye)" opacity="0.85" />
-        <ellipse cx="17" cy="12.5" rx="3" ry="4" fill="#0c0905" opacity="0.7" />
-        <ellipse cx="17" cy="12" rx="1.8" ry="2.5" fill="#1a7a50" opacity="0.8" />
-        <ellipse cx="17" cy="11.5" rx="0.9" ry="1.2" fill="#d4aa4a" opacity="0.9" />
+        {/* Left barbs — golden flowing curves */}
+        <path d="M30 78 C20 76 10 68 6 60" stroke="#b8922a" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+        <path d="M28 72 C18 71 8 64 2 54" stroke="#b8922a" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+        <path d="M26 66 C18 65 10 58 4 48" stroke="#b8922a" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+        <path d="M25 60 C18 60 12 54 8 44" stroke="#c4a035" strokeWidth="1.1" fill="none" strokeLinecap="round" />
+        <path d="M24 54 C18 54 14 48 12 40" stroke="#c4a035" strokeWidth="1" fill="none" strokeLinecap="round" />
+        <path d="M22 46 C18 46 14 42 12 34" stroke="#d4aa4a" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+        <path d="M20 38 C17 38 14 34 14 28" stroke="#d4aa4a" strokeWidth="0.7" fill="none" strokeLinecap="round" opacity="0.8" />
 
-        {/* Quill shaft — the main spine */}
-        <path d="M17 8 C17 14 15 22 8 38 C7 40 6 42 5 43" stroke="url(#quillShaft)" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-        <path d="M17 8 C17 14 15 22 8 38" stroke="#f5efe4" strokeWidth="0.4" strokeLinecap="round" fill="none" opacity="0.3" />
+        {/* Left barb curls */}
+        <path d="M6 60 C3 58 2 54 4 52" stroke="#b8922a" strokeWidth="1" fill="none" strokeLinecap="round" />
+        <path d="M2 54 C-1 51 -1 47 1 45" stroke="#b8922a" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+        <path d="M4 48 C1 45 1 41 3 39" stroke="#c4a035" strokeWidth="0.7" fill="none" strokeLinecap="round" />
+        <path d="M8 44 C5 42 5 38 7 36" stroke="#c4a035" strokeWidth="0.6" fill="none" strokeLinecap="round" />
 
-        {/* Quill tip — nib */}
-        <path d="M4 43 C4.5 42 5 41.5 5.5 42.5 C5 43 4.5 43.5 4 43Z" fill="#f5efe4" opacity="0.9" />
-        <circle cx="4.5" cy="43" r="1" fill="#f5efe4" opacity="0.8" />
+        {/* Left dark accent wisps */}
+        <path d="M29 74 C21 74 12 68 8 62" stroke="#8a6c1a" strokeWidth="1.1" fill="none" strokeLinecap="round" opacity="0.6" />
+        <path d="M27 68 C20 68 12 62 6 54" stroke="#8a6c1a" strokeWidth="0.9" fill="none" strokeLinecap="round" opacity="0.5" />
+        <path d="M25 62 C19 62 14 56 10 48" stroke="#8a6c1a" strokeWidth="0.8" fill="none" strokeLinecap="round" opacity="0.45" />
+
+        {/* Right barbs — golden flowing curves */}
+        <path d="M30 78 C40 82 52 84 60 82" stroke="#b8922a" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+        <path d="M28 72 C38 76 52 78 64 76" stroke="#b8922a" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+        <path d="M26 66 C36 70 50 72 62 70" stroke="#b8922a" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+        <path d="M25 60 C34 63 48 64 58 62" stroke="#c4a035" strokeWidth="1.1" fill="none" strokeLinecap="round" />
+        <path d="M24 54 C32 56 44 56 54 54" stroke="#c4a035" strokeWidth="1" fill="none" strokeLinecap="round" />
+        <path d="M22 46 C30 48 40 48 48 46" stroke="#d4aa4a" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+        <path d="M20 38 C26 40 34 40 40 38" stroke="#d4aa4a" strokeWidth="0.7" fill="none" strokeLinecap="round" opacity="0.8" />
+
+        {/* Right barb curls */}
+        <path d="M60 82 C64 83 67 81 66 78" stroke="#b8922a" strokeWidth="1" fill="none" strokeLinecap="round" />
+        <path d="M64 76 C68 77 71 74 69 71" stroke="#b8922a" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+        <path d="M62 70 C66 70 68 67 66 64" stroke="#c4a035" strokeWidth="0.7" fill="none" strokeLinecap="round" />
+        <path d="M58 62 C62 62 64 59 62 56" stroke="#c4a035" strokeWidth="0.6" fill="none" strokeLinecap="round" />
+
+        {/* Right dark accent wisps */}
+        <path d="M29 76 C38 80 52 82 62 80" stroke="#8a6c1a" strokeWidth="1.1" fill="none" strokeLinecap="round" opacity="0.6" />
+        <path d="M27 70 C36 74 50 76 62 74" stroke="#8a6c1a" strokeWidth="0.9" fill="none" strokeLinecap="round" opacity="0.5" />
+        <path d="M25 64 C34 67 48 68 58 66" stroke="#8a6c1a" strokeWidth="0.8" fill="none" strokeLinecap="round" opacity="0.45" />
+
+        {/* Light golden wisps near shaft */}
+        <path d="M18 40 C15 40 12 44 12 50" stroke="#e8cc6a" strokeWidth="0.6" fill="none" strokeLinecap="round" opacity="0.45" />
+        <path d="M20 34 C18 36 16 40 16 46" stroke="#e8cc6a" strokeWidth="0.5" fill="none" strokeLinecap="round" opacity="0.4" />
+        <path d="M22 44 C26 42 30 42 34 44" stroke="#e8cc6a" strokeWidth="0.6" fill="none" strokeLinecap="round" opacity="0.45" />
+
+        {/* Peacock eye — outer golden ring */}
+        <ellipse cx="34" cy="76" rx="10" ry="12" fill="url(#eyeOuter)" opacity="0.85" />
+        {/* Eye — inner golden */}
+        <ellipse cx="34" cy="77" rx="6.5" ry="8" fill="url(#eyeMiddle)" opacity="0.9" />
+        {/* Eye — dark center */}
+        <ellipse cx="34" cy="77.5" rx="3.5" ry="4.5" fill="#1a1209" opacity="0.8" />
+        {/* Eye — warm highlight */}
+        <ellipse cx="33.5" cy="78.5" rx="1.5" ry="2" fill="#b8922a" opacity="0.7" />
+        <ellipse cx="34.5" cy="79" rx="0.6" ry="0.8" fill="#f5efe4" opacity="0.5" />
       </svg>
     </div>
   );
