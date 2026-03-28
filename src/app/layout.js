@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono, Cormorant_Garamond, Jost } from "next/font/google";
 import "./globals.css";
+import AnimatedCursor from "./components/AnimatedCursor";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} ${jost.variable} antialiased`}
       >
+        <AnimatedCursor />
         {children}
       </body>
     </html>

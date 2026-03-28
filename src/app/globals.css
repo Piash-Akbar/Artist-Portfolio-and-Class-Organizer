@@ -28,6 +28,7 @@
 
 html {
   scroll-behavior: smooth;
+  cursor: none;
 }
 
 body {
@@ -35,6 +36,11 @@ body {
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hide default cursor everywhere */
+*, *::before, *::after {
+  cursor: none !important;
 }
 
 /* Scrollbar */
