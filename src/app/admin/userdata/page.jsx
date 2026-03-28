@@ -8,7 +8,6 @@ import {
   updateDoc, doc, deleteDoc
 } from "firebase/firestore";
 import { signOut, onAuthStateChanged, signInAnonymously } from "firebase/auth";
-import { auth } from "../../firebaseConfig";
 import LoadingSpinner from "../../loading/loadingSpinner";
 import { usePasscodeGate, PasscodeGate } from "../usePasscodeGate";
 
