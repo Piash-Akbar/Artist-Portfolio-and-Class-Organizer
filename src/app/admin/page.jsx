@@ -190,7 +190,7 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0c0905] flex items-center justify-center">
         <LoadingSpinner />
       </div>
     );
@@ -234,52 +234,55 @@ const saveStudentChanges = async () => {
   return (
     <>
       <Navbar />
-      <div className="relative min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center py-16 px-4">
-        <div className="absolute inset-0 bg-[url('/background.jpg')] bg-cover bg-center opacity-30"></div>
+      <div className="relative min-h-screen bg-[#0c0905] text-[#f5efe4] flex flex-col items-center py-20 sm:py-16 px-4 sm:px-6">
+        <div className="absolute inset-0 bg-[url('/background.jpg')] bg-cover bg-center opacity-15"></div>
         <div className="relative z-10 w-full max-w-5xl">
 
-          <h1 className="text-4xl font-bold mb-10 text-center bg-gradient-to-r from-amber-400 to-pink-500 bg-clip-text text-transparent">
+          <p className="text-[10px] tracking-[0.24em] uppercase text-[#b8922a] font-medium mb-3 flex items-center justify-center gap-2.5">
+            <span className="w-5 h-px bg-[#b8922a] inline-block"></span>Administration
+          </p>
+          <h1 className="font-[family-name:var(--font-cormorant)] text-3xl sm:text-4xl font-light italic mb-8 sm:mb-10 text-center text-[#f5efe4]">
             Admin Dashboard
           </h1>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-600/80 rounded-lg text-center">
+            <div className="mb-6 p-3 sm:p-4 bg-[#1a1209] border border-[#b8922a]/25 rounded-sm text-center text-sm sm:text-base text-[#f5efe4]/70">
               {error}
             </div>
           )}
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12">
             <button
               onClick={handleLogout}
-              className="bg-red-900/80 hover:bg-red-800 text-amber-400 px-6 py-2 rounded-lg font-medium transition-all duration-200 hover:cursor-pointer hover:shadow-lg"
+              className="border border-[#f5efe4]/20 text-[#f5efe4]/60 px-6 py-2 rounded-sm font-medium transition-all duration-300 hover:cursor-pointer hover:border-[#f5efe4]/40 text-[10px] sm:text-xs tracking-[0.15em] uppercase"
             >
               Logout
             </button>
             <button
               onClick={() => router.push("/admin/content")}
-              className="bg-gradient-to-r hover:cursor-pointer from-amber-400 to-pink-500 px-6 py-2 rounded-lg font-medium hover:from-amber-500 hover:to-pink-600 transition-all duration-200 hover:shadow-lg"
+              className="bg-[#b8922a] hover:bg-[#d4aa4a] text-[#0c0905] hover:cursor-pointer px-6 py-2 rounded-sm font-medium transition-all duration-300 text-[10px] sm:text-xs tracking-[0.15em] uppercase"
             >
               Manage Content
             </button>
           </div>
 
           {/* Class Requests */}
-          <section className="bg-gray-800/80 p-6 rounded-xl shadow-xl mb-10 backdrop-blur-md">
-            <h2 className="text-2xl font-semibold mb-4 text-amber-400">
+          <section className="bg-[#1a1209] border border-[#b8922a]/10 p-4 sm:p-6 rounded-sm mb-6 sm:mb-10">
+            <h2 className="font-[family-name:var(--font-cormorant)] text-xl sm:text-2xl font-light italic mb-3 sm:mb-4 text-[#b8922a]">
               Pending Class Requests ({classRequests.length})
             </h2>
             {classRequests.length === 0 ? (
-              <p className="text-gray-300 italic">No pending requests.</p>
+              <p className="text-[#f5efe4]/40 italic text-sm sm:text-base">No pending requests.</p>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {classRequests.map((r) => (
                   <div
                     key={r.id}
-                    className="bg-gray-900/70 p-4 rounded-lg flex justify-between items-center shadow-lg hover:shadow-amber-500/20 transition-all"
+                    className="bg-[#0c0905] border border-[#b8922a]/10 p-3 sm:p-4 rounded-sm flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 transition-all hover:border-[#b8922a]/25"
                   >
                     <div>
-                      <p className="font-bold text-white">{r.displayName}</p>
-                      <p className="text-xl text-gray-400">
+                      <p className="font-medium text-[#f5efe4] text-sm sm:text-base">{r.displayName}</p>
+                      <p className="text-sm text-[#f5efe4]/50">
                         Date: {r.date} | Time: {r.time}
                       </p>
                     </div>
@@ -287,22 +290,22 @@ const saveStudentChanges = async () => {
                       <button
                         onClick={() => approveRequest("classesRequests", r.id)}
                         disabled={isProcessing("classesRequests", r.id)}
-                        className={`px-4 py-2 rounded-lg text-white font-medium hover:cursor-pointer ${
+                        className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-sm font-medium hover:cursor-pointer text-[10px] sm:text-xs tracking-[0.1em] uppercase ${
                           isProcessing("classesRequests", r.id)
-                            ? "bg-gray-600"
-                            : "bg-green-600 hover:bg-green-700"
-                        }`}
+                            ? "bg-[#f5efe4]/10 text-[#f5efe4]/30"
+                            : "bg-[#b8922a] text-[#0c0905] hover:bg-[#d4aa4a]"
+                        } transition-colors`}
                       >
                         {isProcessing("classesRequests", r.id) ? "Processing..." : "Approve"}
                       </button>
                       <button
                         onClick={() => declineRequest("classesRequests", r.id)}
                         disabled={isProcessing("classesRequests", r.id)}
-                        className={`px-4 py-2 rounded-lg text-white font-medium hover:cursor-pointer ${
+                        className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-sm font-medium hover:cursor-pointer text-[10px] sm:text-xs tracking-[0.1em] uppercase ${
                           isProcessing("classesRequests", r.id)
-                            ? "bg-gray-600"
-                            : "bg-red-600 hover:bg-red-700"
-                        }`}
+                            ? "bg-[#f5efe4]/10 text-[#f5efe4]/30"
+                            : "border border-[#f5efe4]/20 text-[#f5efe4]/60 hover:border-[#f5efe4]/40"
+                        } transition-colors`}
                       >
                         Decline
                       </button>
@@ -314,56 +317,54 @@ const saveStudentChanges = async () => {
           </section>
 
           {/* Credit Requests */}
-          <section className="bg-gray-800/80 p-6 rounded-xl shadow-xl mb-10 backdrop-blur-md">
-            <h2 className="text-2xl font-semibold mb-4 text-amber-400">
+          <section className="bg-[#1a1209] border border-[#b8922a]/10 p-4 sm:p-6 rounded-sm mb-6 sm:mb-10">
+            <h2 className="font-[family-name:var(--font-cormorant)] text-xl sm:text-2xl font-light italic mb-3 sm:mb-4 text-[#b8922a]">
               Pending Credit Requests ({creditRequests.length})
             </h2>
             {creditRequests.length === 0 ? (
-              <p className="text-gray-300 italic">No pending requests.</p>
+              <p className="text-[#f5efe4]/40 italic text-sm sm:text-base">No pending requests.</p>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {creditRequests.map((r) => (
                   <div
                     key={r.id}
-                    className="bg-gray-900/70 p-4 rounded-lg flex justify-between items-center shadow-lg hover:shadow-pink-500/20 transition-all"
+                    className="bg-[#0c0905] border border-[#b8922a]/10 p-3 sm:p-4 rounded-sm flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 transition-all hover:border-[#b8922a]/25"
                   >
-                    <div>
-                      <p className="font-bold text-white">{r.displayName}</p>
-                      <p className="text-xl text-gray-400">
+                    <div className="space-y-0.5">
+                      <p className="font-medium text-[#f5efe4] text-sm sm:text-base">{r.displayName}</p>
+                      <p className="text-sm text-[#f5efe4]/50">
                         {r.amount} classes
                       </p>
-
-                      <p>
+                      <p className="text-sm text-[#f5efe4]/40">
                         Payment Method: {r.paymentMethod}
                       </p>
-                      <p>
+                      <p className="text-sm text-[#f5efe4]/40">
                         Transaction Proof: {r.proof}
                       </p>
-                      <p>
+                      <p className="text-sm text-[#f5efe4]/40">
                         Additional Message: {r.message || "N/A"}
                       </p>
-
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 shrink-0">
                       <button
                         onClick={() => approveRequest("creditRequests", r.id)}
                         disabled={isProcessing("creditRequests", r.id)}
-                        className={`px-4 py-2 rounded-lg text-white hover:cursor-pointer font-medium ${
+                        className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-sm hover:cursor-pointer font-medium text-[10px] sm:text-xs tracking-[0.1em] uppercase ${
                           isProcessing("creditRequests", r.id)
-                            ? "bg-gray-600"
-                            : "bg-green-600 hover:bg-green-700"
-                        }`}
+                            ? "bg-[#f5efe4]/10 text-[#f5efe4]/30"
+                            : "bg-[#b8922a] text-[#0c0905] hover:bg-[#d4aa4a]"
+                        } transition-colors`}
                       >
                         {isProcessing("creditRequests", r.id) ? "Processing..." : "Approve"}
                       </button>
                       <button
                         onClick={() => declineRequest("creditRequests", r.id)}
                         disabled={isProcessing("creditRequests", r.id)}
-                        className={`px-4 py-2 rounded-lg text-white hover:cursor-pointer font-medium ${
+                        className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-sm hover:cursor-pointer font-medium text-[10px] sm:text-xs tracking-[0.1em] uppercase ${
                           isProcessing("creditRequests", r.id)
-                            ? "bg-gray-600"
-                            : "bg-red-600 hover:bg-red-700"
-                        }`}
+                            ? "bg-[#f5efe4]/10 text-[#f5efe4]/30"
+                            : "border border-[#f5efe4]/20 text-[#f5efe4]/60 hover:border-[#f5efe4]/40"
+                        } transition-colors`}
                       >
                         Decline
                       </button>
@@ -375,72 +376,72 @@ const saveStudentChanges = async () => {
           </section>
 
           {/* Students */}
-          <section className="bg-gray-800/80 p-6 rounded-xl shadow-xl backdrop-blur-md">
-            <h2 className="text-2xl font-semibold mb-4 text-amber-400">Students</h2>
+          <section className="bg-[#1a1209] border border-[#b8922a]/10 p-4 sm:p-6 rounded-sm">
+            <h2 className="font-[family-name:var(--font-cormorant)] text-xl sm:text-2xl font-light italic mb-3 sm:mb-4 text-[#b8922a]">Students</h2>
             <input
               type="text"
               placeholder="Search by name or email…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full p-3 mb-6 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="w-full p-3 mb-4 sm:mb-6 rounded-sm bg-[#0c0905] text-[#f5efe4] border border-[#b8922a]/20 focus:outline-none focus:ring-1 focus:ring-[#b8922a]/50 text-sm sm:text-base"
             />
             {filteredStudents.length === 0 ? (
-              <p className="text-gray-300 italic">No students found.</p>
+              <p className="text-[#f5efe4]/40 italic text-sm sm:text-base">No students found.</p>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {filteredStudents.map((s) => (
                   <div
                     key={s.id}
-                    className="bg-gray-900/70 p-4 rounded-lg shadow-lg hover:shadow-amber-500/10 transition-all"
+                    className="bg-[#0c0905] border border-[#b8922a]/10 p-3 sm:p-4 rounded-sm transition-all hover:border-[#b8922a]/25"
                   >
-                    <p className="font-bold text-white">{s.displayName}</p>
-                    <p>
+                    <p className="font-medium text-[#f5efe4] text-sm sm:text-base">{s.displayName}</p>
+                    <p className="text-sm sm:text-base text-[#f5efe4]/60">
                       Classes Remain: {s.credits ?? 0}
                     </p>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-xs sm:text-sm text-[#f5efe4]/40">
                       Email: {s.email}
                     </p>
-                    <p>
+                    <p className="text-sm sm:text-base text-[#f5efe4]/60">
                       Class Fee: {s.classFee ? `$${s.classFee}` : "Not set"}
                     </p>
 
-                    <div className="flex gap-2 mt-3">
+                    <div className="flex gap-2 mt-2 sm:mt-3">
                     <button
                       onClick={() => openEditModal(s)}
-                      className="px-3 py-1 rounded-lg bg-amber-500 text-black font-medium hover:cursor-pointer hover:bg-amber-600"
+                      className="px-3 py-1 rounded-sm bg-[#b8922a] text-[#0c0905] font-medium hover:cursor-pointer hover:bg-[#d4aa4a] text-[10px] tracking-[0.1em] uppercase transition-colors"
                     >
                       Edit
                     </button>
                   </div>
                   {editingStudent && (
-  <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
-    <div className="bg-gray-800 p-6 rounded-xl w-full max-w-md">
-      <h2 className="text-xl font-semibold text-amber-400 mb-4">Edit Student</h2>
+  <div className="fixed inset-0 bg-[#0c0905]/90 flex justify-center items-center z-50 px-4">
+    <div className="bg-[#1a1209] border border-[#b8922a]/20 p-5 sm:p-6 rounded-sm w-full max-w-md">
+      <h2 className="font-[family-name:var(--font-cormorant)] text-lg sm:text-xl font-light italic text-[#b8922a] mb-3 sm:mb-4">Edit Student</h2>
 
-      <label className="block mb-3">
+      <label className="block mb-3 text-sm sm:text-base text-[#f5efe4]/60">
         Display Name
         <input
           type="text"
           value={editForm.displayName}
           onChange={(e) => setEditForm({ ...editForm, displayName: e.target.value })}
-          className="w-full p-2 rounded bg-gray-700 text-white mt-1"
+          className="w-full p-2 rounded-sm bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] mt-1 text-sm sm:text-base"
         />
       </label>
 
-      <label className="block mb-4">
+      <label className="block mb-4 text-sm sm:text-base text-[#f5efe4]/60">
         Class Fee
         <input
           type="number"
           value={editForm.classFee}
           onChange={(e) => setEditForm({ ...editForm, classFee: e.target.value })}
-          className="w-full p-2 rounded bg-gray-700 text-white mt-1"
+          className="w-full p-2 rounded-sm bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] mt-1 text-sm sm:text-base"
         />
       </label>
 
       <div className="flex justify-end gap-3">
         <button
           onClick={() => setEditingStudent(null)}
-          className="px-4 py-2 bg-gray-600 rounded-lg hover:cursor-pointer text-white font-medium hover:bg-gray-700"
+          className="px-4 py-2 border border-[#f5efe4]/20 text-[#f5efe4]/60 rounded-sm hover:cursor-pointer font-medium hover:border-[#f5efe4]/40 text-sm sm:text-base transition-colors"
         >
           Cancel
         </button>
@@ -448,8 +449,8 @@ const saveStudentChanges = async () => {
         <button
           onClick={saveStudentChanges}
           disabled={saving}
-          className={`px-4 py-2 rounded-lg text-white font-medium hover:cursor-pointer ${
-            saving ? "bg-gray-500" : "bg-green-600 hover:bg-green-700"
+          className={`px-4 py-2 rounded-sm font-medium hover:cursor-pointer text-sm sm:text-base transition-colors ${
+            saving ? "bg-[#f5efe4]/10 text-[#f5efe4]/30" : "bg-[#b8922a] text-[#0c0905] hover:bg-[#d4aa4a]"
           }`}
         >
           {saving ? "Saving..." : "Save"}

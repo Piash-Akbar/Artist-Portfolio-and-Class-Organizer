@@ -149,7 +149,7 @@ export default function UserPage() {
   /* ---------------- STATES ---------------- */
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="min-h-screen flex items-center justify-center bg-[#0c0905]">
         <LoadingSpinner />
       </div>
     );
@@ -157,8 +157,8 @@ export default function UserPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <div className="bg-red-600/80 px-6 py-4 rounded-xl text-white">
+      <div className="min-h-screen flex items-center justify-center bg-[#0c0905]">
+        <div className="bg-[#1a1209] border border-[#b8922a]/25 px-6 py-4 rounded-sm text-[#f5efe4]/70">
           {error}
         </div>
       </div>
@@ -169,52 +169,55 @@ export default function UserPage() {
     <>
       <Navbar />
 
-      <main className="relative min-h-screen bg-black text-white pt-28 px-4">
-        <div className="absolute inset-0 bg-[url('/background.jpg')] bg-cover bg-center">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+      <main className="relative min-h-screen bg-[#0c0905] text-[#f5efe4] pt-24 sm:pt-28 px-4 sm:px-6 pb-8">
+        <div className="absolute inset-0 bg-[url('/background.jpg')] bg-cover bg-center opacity-20">
+          <div className="absolute inset-0 bg-[#0c0905]/80 backdrop-blur-sm" />
         </div>
 
-        <section className="relative z-10 max-w-4xl mx-auto space-y-10 animate-fade-up">
+        <section className="relative z-10 max-w-4xl mx-auto space-y-6 sm:space-y-8 md:space-y-10 animate-fade-up">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-blue-300">
+            <p className="text-[10px] tracking-[0.24em] uppercase text-[#b8922a] font-medium mb-3 flex items-center justify-center gap-2.5">
+              <span className="w-5 h-px bg-[#b8922a] inline-block"></span>Dashboard
+            </p>
+            <h1 className="font-[family-name:var(--font-cormorant)] text-3xl sm:text-4xl md:text-5xl font-light italic text-[#f5efe4]">
               Welcome, {userData?.displayName || "User"}
             </h1>
-            <p className="text-white/60 mt-2">
+            <p className="text-[#f5efe4]/50 mt-2 text-sm sm:text-base font-[family-name:var(--font-cormorant)] italic">
               Manage your classes, notices & payments
             </p>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
             {[
-              ["Schedule a Class", "from-blue-500 to-indigo-600", () => setShowSchedulePopup(true)],
-              ["Buy Credits", "from-green-400 to-emerald-500", handleBuyCredit],
-              ["Logout", "from-red-500 to-rose-600", handleLogout],
-            ].map(([text, color, action]) => (
+              ["Schedule a Class", () => setShowSchedulePopup(true)],
+              ["Buy Credits", handleBuyCredit],
+              ["Logout", handleLogout],
+            ].map(([text, action]) => (
               <button
                 key={text}
                 onClick={action}
-                className={`px-6 py-3 rounded-full font-semibold bg-gradient-to-r ${color}
-                text-black hover:scale-105 cursor-pointer transition shadow-lg`}
+                className="px-6 py-2.5 border border-[#b8922a] text-[#b8922a] text-[10px] sm:text-xs font-medium tracking-[0.15em] uppercase
+                hover:bg-[#b8922a] hover:text-[#f5efe4] cursor-pointer transition-all duration-300 text-sm sm:text-base"
               >
                 {text}
               </button>
             ))}
           </div>
 
-          <Card title="Latest Notice" color="blue">
+          <Card title="Latest Notice">
             {notice?.text || "No notices available."}
           </Card>
 
-          <div className={`p-5 rounded-2xl text-center border shadow-lg
+          <div className={`p-4 sm:p-5 rounded-sm text-center border shadow-lg text-sm sm:text-base
             ${credit >= 0
-              ? "bg-green-900/30 border-green-700 text-green-300"
-              : "bg-red-900/30 border-red-700 text-red-300"}`}>
+              ? "bg-[#1a1209] border-[#b8922a]/25 text-[#b8922a]"
+              : "bg-[#1a1209] border-[#b8922a]/40 text-[#f5efe4]/70"}`}>
             {credit >= 0
               ? `You have ${credit} classes left`
               : `Payment due for ${Math.abs(credit)} classes`}
           </div>
 
-          <Card title="Latest Class Schedule" color="purple">
+          <Card title="Latest Class Schedule">
             {latestClassSchedule ? (
               <>
                 <p>Status: {latestClassSchedule.status}</p>
@@ -227,7 +230,7 @@ export default function UserPage() {
           </Card>
 
           {lastPayment && (
-            <Card title="Last Payment Summary" color="purple">
+            <Card title="Last Payment Summary">
               <p>Classes: {lastPayment.amount}</p>
               <p>Status: {lastPayment.status}</p>
               <p>Method: {lastPayment.paymentMethod}</p>
@@ -236,9 +239,9 @@ export default function UserPage() {
         </section>
 
         {showSchedulePopup && (
-          <div className="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center">
-            <div className="bg-gray-900 p-8 rounded-3xl max-w-md w-full shadow-2xl">
-              <h2 className="text-2xl font-bold mb-6 text-blue-300">
+          <div className="fixed inset-0 z-[9999] bg-[#0c0905]/90 flex items-center justify-center px-4">
+            <div className="bg-[#1a1209] border border-[#b8922a]/20 p-6 sm:p-8 rounded-sm max-w-md w-full shadow-2xl">
+              <h2 className="font-[family-name:var(--font-cormorant)] text-xl sm:text-2xl font-light italic mb-4 sm:mb-6 text-[#f5efe4]">
                 Schedule a Class (IST)
               </h2>
 
@@ -246,7 +249,7 @@ export default function UserPage() {
                 selected={selectedDate}
                 onChange={setSelectedDate}
                 minDate={new Date()}
-                className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 mb-4"
+                className="w-full p-3 rounded-sm bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] mb-4"
                 placeholderText="Select date"
               />
 
@@ -254,19 +257,19 @@ export default function UserPage() {
                 type="time"
                 value={selectedTime}
                 onChange={(e) => setSelectedTime(e.target.value)}
-                className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 mb-6"
+                className="w-full p-3 rounded-sm bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] mb-6"
               />
 
               <div className="flex justify-end gap-3">
                 <button
                   onClick={handleSchedule}
-                  className="px-5 py-2 bg-blue-600 rounded-lg"
+                  className="px-5 py-2 bg-[#b8922a] text-[#0c0905] font-medium rounded-sm hover:bg-[#d4aa4a] transition-colors"
                 >
                   Submit
                 </button>
                 <button
                   onClick={() => setShowSchedulePopup(false)}
-                  className="px-5 py-2 bg-gray-700 rounded-lg"
+                  className="px-5 py-2 border border-[#f5efe4]/20 text-[#f5efe4]/60 rounded-sm hover:border-[#f5efe4]/40 transition-colors"
                 >
                   Cancel
                 </button>
@@ -280,13 +283,13 @@ export default function UserPage() {
 }
 
 /* -------- CARD -------- */
-function Card({ title, color, children }) {
+function Card({ title, children }) {
   return (
-    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-xl">
-      <h2 className={`text-2xl font-semibold text-${color}-400 mb-3`}>
+    <div className="bg-[#1a1209] border border-[#b8922a]/15 rounded-sm p-4 sm:p-6">
+      <h2 className="font-[family-name:var(--font-cormorant)] text-xl sm:text-2xl font-light italic text-[#b8922a] mb-2 sm:mb-3">
         {title}
       </h2>
-      <div className="text-white/70 space-y-1">{children}</div>
+      <div className="text-[#f5efe4]/60 space-y-1 text-sm sm:text-base">{children}</div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 /*
   Lineage data — three tiers:
@@ -32,22 +32,22 @@ const guruLinks = [
 const GOLD = '#b8922a';
 const GOLD_LIGHT = '#d4aa4a';
 
+// Fixed internal coordinate space — SVG scales via CSS, not by changing coords
+const VB_W = 820;
+const VB_H = 560;
+
 export default function LineageTree() {
   const svgRef = useRef(null);
   const containerRef = useRef(null);
-  const [dims, setDims] = useState({ w: 820, h: 560 });
 
   useEffect(() => {
     const draw = () => {
       const svg = svgRef.current;
       if (!svg) return;
 
-      const container = containerRef.current;
-      const cw = container?.offsetWidth || 820;
-      const W = Math.max(cw, 700);
-      const H = 560;
+      const W = VB_W;
+      const H = VB_H;
 
-      setDims({ w: W, h: H });
       svg.innerHTML = '';
 
       // Row Y positions
@@ -300,24 +300,19 @@ export default function LineageTree() {
 
     draw();
     const timer = setTimeout(draw, 150);
-    window.addEventListener('resize', draw);
     return () => {
       clearTimeout(timer);
-      window.removeEventListener('resize', draw);
     };
   }, []);
 
   return (
-    <div ref={containerRef} className="w-full py-8">
-      <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
-        <svg
-          ref={svgRef}
-          width={dims.w}
-          height={dims.h}
-          viewBox={`0 0 ${dims.w} ${dims.h}`}
-          className="block mx-auto"
-        />
-      </div>
+    <div ref={containerRef} className="w-full py-4 sm:py-8">
+      <svg
+        ref={svgRef}
+        viewBox={`0 0 ${VB_W} ${VB_H}`}
+        className="block mx-auto w-full h-auto"
+        preserveAspectRatio="xMidYMid meet"
+      />
     </div>
   );
 }

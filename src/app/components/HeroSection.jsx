@@ -117,7 +117,7 @@ export default function HeroSection({
       </div>
 
       {/* Scroll Hint - bottom right */}
-      <div className="absolute bottom-[clamp(32px,6vw,64px)] right-[clamp(22px,4vw,48px)] z-10 flex flex-col items-center gap-2 animate-fade-in" style={{ animationDelay: '600ms' }}>
+      <div className="absolute bottom-[clamp(32px,6vw,64px)] right-[clamp(22px,4vw,48px)] z-10 hidden sm:flex flex-col items-center gap-2 animate-fade-in" style={{ animationDelay: '600ms' }}>
         <span className="text-[9px] tracking-[0.22em] uppercase text-[#f5efe4]/30 font-medium">
           Scroll
         </span>

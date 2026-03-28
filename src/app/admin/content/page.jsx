@@ -185,7 +185,7 @@ export default function AdminContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0c0905] flex items-center justify-center">
         <LoadingSpinner />
       </div>
     );
@@ -194,38 +194,40 @@ export default function AdminContent() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white py-12 px-4 md:px-8">
+      <div className="min-h-screen bg-[#0c0905] text-[#f5efe4] py-20 sm:py-12 px-4 sm:px-6 md:px-8">
         <style jsx>{`
           @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
           .fade { animation: fadeIn 0.8s forwards; }
         `}</style>
 
         <div className="max-w-5xl mx-auto">
-          <h1 className="text-4xl font-serif font-bold mb-12 text-center bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-pink-500 fade">
+          <h1 className="text-3xl sm:text-4xl font-[family-name:var(--font-cormorant)] font-light italic mb-8 sm:mb-12 text-center text-[#f5efe4] fade">
             Content Management
           </h1>
 
-          {error && <div className="mb-6 p-4 bg-red-900/80 rounded-xl">{error}</div>}
+          {error && <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-[#1a1209] border border-[#b8922a]/25 rounded-sm text-sm sm:text-base">{error}</div>}
 
-          {/* ────── ADD CONCERT ────── */}
-          <div className="flex gap-4 justify-center mb-12">
-            <button onClick={handleLogout} className="text-amber-400 bg-red-900/80 px-4 py-2 rounded-xl hover:cursor-pointer">Logout</button>
+          {/* ────── NAV BUTTONS ────── */}
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12">
+            <button onClick={handleLogout} className="text-[#b8922a] bg-[#1a1209] border border-[#b8922a]/25 px-4 py-2 rounded-sm hover:cursor-pointer text-sm sm:text-base">Logout</button>
             <button
               onClick={() => router.push("/admin")}
-              className="bg-gradient-to-r from-amber-400 to-pink-500 px-6 py-2 rounded-lg font-medium hover:cursor-pointer hover:from-amber-500 hover:to-pink-600"
+              className="bg-[#b8922a] hover:bg-[#d4aa4a] text-[#0c0905] px-6 py-2 rounded-lg font-medium hover:cursor-pointer  text-sm sm:text-base"
             >
               Back to Dashboard
             </button>
           </div>
-          <section className="mb-12">
-            <h2 className="text-3xl font-serif mb-4 text-amber-400">Add Upcoming Concert</h2>
-            <form onSubmit={postConcert} className="bg-gray-800/90 backdrop-blur p-6 rounded-xl space-y-4">
+
+          {/* ────── ADD CONCERT ────── */}
+          <section className="mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-[family-name:var(--font-cormorant)] font-light italic mb-3 sm:mb-4 text-[#b8922a]">Add Upcoming Concert</h2>
+            <form onSubmit={postConcert} className="bg-[#1a1209] border border-[#b8922a]/10 p-4 sm:p-6 rounded-sm space-y-3 sm:space-y-4">
               <input
                 placeholder="Venue"
                 value={concert.venue}
                 onChange={e => setConcert(p => ({ ...p, venue: e.target.value }))}
                 required
-                className="w-full p-3 rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-amber-500"
+                className="w-full p-2.5 sm:p-3 rounded bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] focus:ring-1 focus:ring-[#b8922a]/50 focus:outline-none text-sm sm:text-base"
               />
               <DatePicker
                 selected={concert.date && concert.time ? new Date(`${concert.date}T${concert.time}`) : null}
@@ -236,24 +238,24 @@ export default function AdminContent() {
                 placeholderText="Select date & time"
                 minDate={new Date()}
                 required
-                className="w-full p-3 rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-amber-500"
+                className="w-full p-2.5 sm:p-3 rounded bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] focus:ring-1 focus:ring-[#b8922a]/50 focus:outline-none text-sm sm:text-base"
               />
               <input
                 placeholder="Location"
                 value={concert.location}
                 onChange={e => setConcert(p => ({ ...p, location: e.target.value }))}
                 required
-                className="w-full p-3 rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-amber-500"
+                className="w-full p-2.5 sm:p-3 rounded bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] focus:ring-1 focus:ring-[#b8922a]/50 focus:outline-none text-sm sm:text-base"
               />
               <input
                 placeholder="Ticket URL (optional)"
                 value={concert.ticketURL ?? ""}
                 onChange={e => setConcert(p => ({ ...p, ticketURL: e.target.value }))}
-                className="w-full p-3 rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-amber-500"
+                className="w-full p-2.5 sm:p-3 rounded bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] focus:ring-1 focus:ring-[#b8922a]/50 focus:outline-none text-sm sm:text-base"
               />
               <button
                 type="submit"
-                className="w-full hover:cursor-pointer bg-gradient-to-r from-amber-400 to-pink-500 py-2 rounded-lg font-medium hover:from-amber-500 hover:to-pink-600"
+                className="w-full hover:cursor-pointer bg-[#b8922a] hover:bg-[#d4aa4a] text-[#0c0905] py-2 rounded-lg font-medium  text-sm sm:text-base"
               >
                 Add Concert
               </button>
@@ -261,25 +263,25 @@ export default function AdminContent() {
           </section>
 
           {/* ────── POST NOTICE ────── */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-serif mb-4 text-amber-400">Post Notice</h2>
-            <div className="bg-gray-800/90 backdrop-blur p-6 rounded-xl space-y-3">
+          <section className="mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-[family-name:var(--font-cormorant)] font-light italic mb-3 sm:mb-4 text-[#b8922a]">Post Notice</h2>
+            <div className="bg-[#1a1209] border border-[#b8922a]/10 p-4 sm:p-6 rounded-sm space-y-3">
               <textarea
                 value={noticeText}
                 onChange={e => setNoticeText(e.target.value)}
                 placeholder="Notice text…"
                 rows={4}
                 maxLength={1000}
-                className="w-full p-3 rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-amber-500 resize-y"
+                className="w-full p-2.5 sm:p-3 rounded bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] focus:ring-1 focus:ring-[#b8922a]/50 focus:outline-none resize-y text-sm sm:text-base"
               />
-              <div className="text-right text-sm text-gray-400">{noticeText.length}/1000</div>
+              <div className="text-right text-xs sm:text-sm text-[#f5efe4]/30">{noticeText.length}/1000</div>
               <button
                 onClick={postNotice}
                 disabled={!noticeText.trim()}
-                className={`w-full py-2 rounded-lg font-medium text-white hover:cursor-pointer ${
+                className={`w-full py-2 rounded-lg font-medium text-white hover:cursor-pointer text-sm sm:text-base ${
                   noticeText.trim()
-                    ? "bg-gradient-to-r from-amber-400 to-pink-500 hover:from-amber-500 hover:to-pink-600"
-                    : "bg-gray-600"
+                    ? "bg-[#b8922a] hover:bg-[#d4aa4a] text-[#0c0905] "
+                    : "bg-[#f5efe4]/10 text-[#f5efe4]/30"
                 }`}
               >
                 Post Notice
@@ -288,16 +290,16 @@ export default function AdminContent() {
           </section>
 
           {/* ────── LATEST NOTICES ────── */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-serif mb-4 text-amber-400">Latest Notices</h2>
+          <section className="mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-[family-name:var(--font-cormorant)] font-light italic mb-3 sm:mb-4 text-[#b8922a]">Latest Notices</h2>
             {notices.length === 0 ? (
-              <p className="text-gray-300 italic">No notices.</p>
+              <p className="text-[#f5efe4]/50 italic text-sm sm:text-base">No notices.</p>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {notices.map((n, i) => (
                   <div
                     key={n.id}
-                    className="bg-gray-800/90 backdrop-blur p-5 rounded-xl flex justify-between items-start gap-3 fade"
+                    className="bg-[#1a1209] border border-[#b8922a]/10 p-4 sm:p-5 rounded-sm flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 fade"
                     style={{ animationDelay: `${i * 80}ms` }}
                   >
                     {editingNotice?.id === n.id ? (
@@ -305,19 +307,19 @@ export default function AdminContent() {
                         <textarea
                           value={editingNotice.text}
                           onChange={e => setEditingNotice({ ...editingNotice, text: e.target.value })}
-                          className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-amber-500"
+                          className="w-full p-2 rounded bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] focus:ring-1 focus:ring-[#b8922a]/50 focus:outline-none text-sm sm:text-base"
                           rows={3}
                         />
                         <div className="flex gap-2">
                           <button
                             onClick={updateNotice}
-                            className="bg-green-600 hover:bg-green-700 px-3 py-1 hover:cursor-pointer rounded text-white text-sm"
+                            className="bg-[#b8922a] hover:bg-[#d4aa4a] text-[#0c0905] px-3 py-1 hover:cursor-pointer rounded text-white text-sm"
                           >
                             Save
                           </button>
                           <button
                             onClick={() => setEditingNotice(null)}
-                            className="bg-gray-600 hover:bg-gray-700 px-3 py-1 hover:cursor-pointer rounded text-white text-sm"
+                            className="bg-[#f5efe4]/10 text-[#f5efe4]/30 hover:bg-gray-700 px-3 py-1 hover:cursor-pointer rounded text-white text-sm"
                           >
                             Cancel
                           </button>
@@ -325,20 +327,20 @@ export default function AdminContent() {
                       </div>
                     ) : (
                       <>
-                        <div>
-                          <p>{n.text}</p>
-                          <p className="text-xs text-gray-400 mt-1">Posted: {n.createdAt}</p>
+                        <div className="min-w-0">
+                          <p className="text-sm sm:text-base break-words">{n.text}</p>
+                          <p className="text-xs text-[#f5efe4]/30 mt-1">Posted: {n.createdAt}</p>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 shrink-0">
                           <button
                             onClick={() => setEditingNotice({ id: n.id, text: n.text })}
-                            className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
+                            className="border border-[#b8922a]/40 text-[#b8922a] hover:bg-[#b8922a] hover:text-[#0c0905] px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => deleteNotice(n.id)}
-                            className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
+                            className="border border-[#f5efe4]/15 text-[#f5efe4]/40 hover:border-[#f5efe4]/30 hover:text-[#f5efe4]/60 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
                           >
                             Delete
                           </button>
@@ -352,16 +354,16 @@ export default function AdminContent() {
           </section>
 
           {/* ────── UPCOMING CONCERTS ────── */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-serif mb-4 text-amber-400">Upcoming Concerts</h2>
+          <section className="mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-[family-name:var(--font-cormorant)] font-light italic mb-3 sm:mb-4 text-[#b8922a]">Upcoming Concerts</h2>
             {concerts.length === 0 ? (
-              <p className="text-gray-300 italic">No concerts.</p>
+              <p className="text-[#f5efe4]/50 italic text-sm sm:text-base">No concerts.</p>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {concerts.map((c, i) => (
                   <div
                     key={c.id}
-                    className="bg-gray-800/90 backdrop-blur p-5 rounded-xl flex justify-between items-start gap-3 fade"
+                    className="bg-[#1a1209] border border-[#b8922a]/10 p-4 sm:p-5 rounded-sm flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 fade"
                     style={{ animationDelay: `${i * 80}ms` }}
                   >
                     {editingConcert?.id === c.id ? (
@@ -370,36 +372,36 @@ export default function AdminContent() {
                           value={editingConcert.venue}
                           onChange={e => setEditingConcert(p => ({ ...p, venue: e.target.value }))}
                           placeholder="Venue"
-                          className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-amber-500"
+                          className="w-full p-2 rounded bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] focus:ring-1 focus:ring-[#b8922a]/50 focus:outline-none text-sm sm:text-base"
                         />
                         <input
                           value={editingConcert.date}
                           onChange={e => setEditingConcert(p => ({ ...p, date: e.target.value }))}
                           placeholder="Date"
-                          className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-amber-500"
+                          className="w-full p-2 rounded bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] focus:ring-1 focus:ring-[#b8922a]/50 focus:outline-none text-sm sm:text-base"
                         />
                         <input
                           value={editingConcert.time}
                           onChange={e => setEditingConcert(p => ({ ...p, time: e.target.value }))}
                           placeholder="Time"
-                          className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-amber-500"
+                          className="w-full p-2 rounded bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] focus:ring-1 focus:ring-[#b8922a]/50 focus:outline-none text-sm sm:text-base"
                         />
                         <input
                           value={editingConcert.location}
                           onChange={e => setEditingConcert(p => ({ ...p, location: e.target.value }))}
                           placeholder="Location"
-                          className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-amber-500"
+                          className="w-full p-2 rounded bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] focus:ring-1 focus:ring-[#b8922a]/50 focus:outline-none text-sm sm:text-base"
                         />
                         <div className="flex gap-2">
                           <button
                             onClick={updateConcert}
-                            className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
+                            className="bg-[#b8922a] hover:bg-[#d4aa4a] text-[#0c0905] px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
                           >
                             Save
                           </button>
                           <button
                             onClick={() => setEditingConcert(null)}
-                            className="bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
+                            className="bg-[#f5efe4]/10 text-[#f5efe4]/30 hover:bg-gray-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
                           >
                             Cancel
                           </button>
@@ -407,27 +409,27 @@ export default function AdminContent() {
                       </div>
                     ) : (
                       <>
-                        <div>
-                          <p className="font-bold">{c.venue}</p>
-                          <p className="text-sm text-gray-300">{c.date} @ {c.time} – {c.location}</p>
-                          <p className="text-xs text-gray-400 mt-1">Posted: {c.createdAt}</p>
+                        <div className="min-w-0">
+                          <p className="font-bold text-sm sm:text-base">{c.venue}</p>
+                          <p className="text-xs sm:text-sm text-[#f5efe4]/50">{c.date} @ {c.time} – {c.location}</p>
+                          <p className="text-xs text-[#f5efe4]/30 mt-1">Posted: {c.createdAt}</p>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 shrink-0 flex-wrap">
                           <button
                             onClick={() => archiveConcert(c)}
-                            className="bg-amber-600 hover:bg-amber-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
+                            className="bg-[#b8922a] hover:bg-[#d4aa4a] text-[#0c0905] px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
                           >
                             Archive
                           </button>
                           <button
                             onClick={() => setEditingConcert({ id: c.id, ...c })}
-                            className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
+                            className="border border-[#b8922a]/40 text-[#b8922a] hover:bg-[#b8922a] hover:text-[#0c0905] px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => deleteConcert(c.id)}
-                            className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
+                            className="border border-[#f5efe4]/15 text-[#f5efe4]/40 hover:border-[#f5efe4]/30 hover:text-[#f5efe4]/60 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
                           >
                             Delete
                           </button>
@@ -441,16 +443,16 @@ export default function AdminContent() {
           </section>
 
           {/* ────── ARCHIVED CONCERTS ────── */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-serif mb-4 text-amber-400">Archived Concerts</h2>
+          <section className="mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-[family-name:var(--font-cormorant)] font-light italic mb-3 sm:mb-4 text-[#b8922a]">Archived Concerts</h2>
             {archivedConcerts.length === 0 ? (
-              <p className="text-gray-300 italic">No archived concerts.</p>
+              <p className="text-[#f5efe4]/50 italic text-sm sm:text-base">No archived concerts.</p>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {archivedConcerts.map((c, i) => (
                   <div
                     key={c.id}
-                    className="bg-gray-800/90 backdrop-blur p-5 rounded-xl flex justify-between items-start gap-3 fade"
+                    className="bg-[#1a1209] border border-[#b8922a]/10 p-4 sm:p-5 rounded-sm flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 fade"
                     style={{ animationDelay: `${i * 80}ms` }}
                   >
                     {editingArchived?.id === c.id ? (
@@ -459,36 +461,36 @@ export default function AdminContent() {
                           value={editingArchived.venue}
                           onChange={e => setEditingArchived(p => ({ ...p, venue: e.target.value }))}
                           placeholder="Venue"
-                          className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-amber-500"
+                          className="w-full p-2 rounded bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] focus:ring-1 focus:ring-[#b8922a]/50 focus:outline-none text-sm sm:text-base"
                         />
                         <input
                           value={editingArchived.date}
                           onChange={e => setEditingArchived(p => ({ ...p, date: e.target.value }))}
                           placeholder="Date"
-                          className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-amber-500"
+                          className="w-full p-2 rounded bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] focus:ring-1 focus:ring-[#b8922a]/50 focus:outline-none text-sm sm:text-base"
                         />
                         <input
                           value={editingArchived.time || ""}
                           onChange={e => setEditingArchived(p => ({ ...p, time: e.target.value }))}
                           placeholder="Time"
-                          className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-amber-500"
+                          className="w-full p-2 rounded bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] focus:ring-1 focus:ring-[#b8922a]/50 focus:outline-none text-sm sm:text-base"
                         />
                         <input
                           value={editingArchived.location || ""}
                           onChange={e => setEditingArchived(p => ({ ...p, location: e.target.value }))}
                           placeholder="Location"
-                          className="w-full p-2 rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-amber-500"
+                          className="w-full p-2 rounded bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] focus:ring-1 focus:ring-[#b8922a]/50 focus:outline-none text-sm sm:text-base"
                         />
                         <div className="flex gap-2">
                           <button
                             onClick={updateArchivedConcert}
-                            className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
+                            className="bg-[#b8922a] hover:bg-[#d4aa4a] text-[#0c0905] px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
                           >
                             Save
                           </button>
                           <button
                             onClick={() => setEditingArchived(null)}
-                            className="bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
+                            className="bg-[#f5efe4]/10 text-[#f5efe4]/30 hover:bg-gray-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
                           >
                             Cancel
                           </button>
@@ -496,21 +498,21 @@ export default function AdminContent() {
                       </div>
                     ) : (
                       <>
-                        <div>
-                          <p className="font-bold">{c.venue}</p>
-                          <p className="text-sm text-gray-300">{c.date} {c.time ? `@ ${c.time}` : ""} {c.location ? `– ${c.location}` : ""}</p>
-                          <p className="text-xs text-gray-400 mt-1">Archived: {c.createdAt}</p>
+                        <div className="min-w-0">
+                          <p className="font-bold text-sm sm:text-base">{c.venue}</p>
+                          <p className="text-xs sm:text-sm text-[#f5efe4]/50">{c.date} {c.time ? `@ ${c.time}` : ""} {c.location ? `– ${c.location}` : ""}</p>
+                          <p className="text-xs text-[#f5efe4]/30 mt-1">Archived: {c.createdAt}</p>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 shrink-0">
                           <button
                             onClick={() => setEditingArchived({ id: c.id, ...c })}
-                            className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
+                            className="border border-[#b8922a]/40 text-[#b8922a] hover:bg-[#b8922a] hover:text-[#0c0905] px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => deleteArchivedConcert(c.id)}
-                            className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
+                            className="border border-[#f5efe4]/15 text-[#f5efe4]/40 hover:border-[#f5efe4]/30 hover:text-[#f5efe4]/60 px-3 py-1 rounded text-white text-sm hover:cursor-pointer"
                           >
                             Delete
                           </button>
@@ -523,11 +525,11 @@ export default function AdminContent() {
             )}
           </section>
 
-          <div className="flex gap-4 justify-center mb-12">
-            <button onClick={handleLogout} className="text-amber-400 bg-red-900/80 px-4 py-2 rounded-xl hover:cursor-pointer">Logout</button>
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12">
+            <button onClick={handleLogout} className="text-[#b8922a] bg-[#1a1209] border border-[#b8922a]/25 px-4 py-2 rounded-sm hover:cursor-pointer text-sm sm:text-base">Logout</button>
             <button
               onClick={() => router.push("/admin")}
-              className="bg-gradient-to-r from-amber-400 to-pink-500 px-6 py-2 rounded-lg font-medium hover:from-amber-500 hover:cursor-pointer hover:to-pink-600"
+              className="bg-[#b8922a] hover:bg-[#d4aa4a] text-[#0c0905] px-6 py-2 rounded-lg font-medium hover:from-amber-500 hover:cursor-pointer hover:to-pink-600 text-sm sm:text-base"
             >
               Back to Dashboard
             </button>

@@ -93,7 +93,7 @@ export default function LandingPage() {
 
   if (loading || checkingForm) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="min-h-screen flex items-center justify-center bg-[#0c0905]">
         <LoadingSpinner />
       </div>
     );
@@ -103,36 +103,36 @@ export default function LandingPage() {
     <>
       <Navbar />
 
-      <main className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black text-white">
+      <main className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0c0905] text-[#f5efe4]">
         {/* Background */}
-        <div className="absolute inset-0 bg-[url('/background.jpg')] bg-cover bg-center">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+        <div className="absolute inset-0 bg-[url('/background.jpg')] bg-cover bg-center opacity-20">
+          <div className="absolute inset-0 bg-[#0c0905]/80 backdrop-blur-sm" />
         </div>
 
         {/* Content Card */}
-        <section className="relative z-10 max-w-3xl mx-auto px-6">
-          <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl p-10 md:p-14 animate-fade-up">
+        <section className="relative z-10 w-full max-w-3xl mx-auto px-4 sm:px-6">
+          <div className="rounded-sm border border-[#b8922a]/15 bg-[#1a1209] p-6 sm:p-10 md:p-14 animate-fade-up">
 
-            <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-8">
-              The one stop solution for all your <br />
-              <span className="bg-gradient-to-r from-amber-400 to-pink-500 bg-clip-text text-transparent">
-                violin learning needs!
-              </span>
+            <p className="text-[10px] tracking-[0.24em] uppercase text-[#b8922a] font-medium mb-4 flex items-center justify-center gap-2.5">
+              <span className="w-5 h-px bg-[#b8922a] inline-block"></span>Students&apos; Corner
+            </p>
+
+            <h1 className="font-[family-name:var(--font-cormorant)] text-3xl sm:text-4xl md:text-5xl font-light italic leading-tight mb-6 sm:mb-8 text-center">
+              The one stop solution for all your <br className="hidden sm:block" />
+              <em className="text-[#b8922a]">violin learning needs!</em>
             </h1>
 
             {error && (
-              <p className="mb-6 text-red-400 font-medium">
+              <p className="mb-4 sm:mb-6 text-[#b8922a]/80 font-medium text-sm sm:text-base">
                 Error: {error}
               </p>
             )}
 
-            <div className="flex flex-col sm:flex-row gap-6 justify-center mt-10">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mt-8 sm:mt-10">
               <button
                 onClick={handleFormRedirect}
-                className="px-8 py-4 rounded-full font-semibold
-                  bg-gradient-to-r from-green-400 to-emerald-500
-                  text-black shadow-lg
-                  hover:scale-105 cursor-pointer hover:shadow-xl transition-all"
+                className="px-6 sm:px-8 py-2.5 sm:py-3 border border-[#b8922a] text-[#b8922a] text-[10px] sm:text-xs font-medium tracking-[0.15em] uppercase
+                  hover:bg-[#b8922a] hover:text-[#f5efe4] cursor-pointer transition-all duration-300"
               >
                 For New Students
               </button>
@@ -140,10 +140,8 @@ export default function LandingPage() {
               {!user && (
                 <button
                   onClick={handleLogin}
-                  className="px-8 py-4 rounded-full font-semibold
-                    bg-gradient-to-r from-blue-500 to-indigo-600
-                    text-white shadow-lg
-                    hover:scale-105 cursor-pointer hover:shadow-xl transition-all"
+                  className="px-6 sm:px-8 py-2.5 sm:py-3 bg-[#b8922a] text-[#0c0905] text-[10px] sm:text-xs font-medium tracking-[0.15em] uppercase
+                    hover:bg-[#d4aa4a] cursor-pointer transition-all duration-300"
                 >
                   Login to Continue
                 </button>

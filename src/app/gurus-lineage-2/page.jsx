@@ -71,76 +71,82 @@ export default function GurusLineage() {
 
         {/* Lineage Tree */}
         <section className="bg-[#1a1209]">
-          <div className="max-w-[980px] mx-auto py-[clamp(44px,8vw,80px)] px-[clamp(22px,6vw,52px)] text-center">
-            <p className="text-[10px] tracking-[0.24em] uppercase text-[#b8922a] font-medium mb-4 flex items-center justify-center gap-2.5">
+          <div className="max-w-[980px] lg:max-w-[1100px] mx-auto py-[clamp(32px,8vw,80px)] px-[clamp(16px,5vw,52px)] text-center">
+            <p className="text-[10px] tracking-[0.24em] uppercase text-[#b8922a] font-medium mb-3 sm:mb-4 flex items-center justify-center gap-2.5">
               <span className="w-5 h-px bg-[#b8922a] inline-block"></span>Parampara
             </p>
-            <h2 className="font-[family-name:var(--font-cormorant)] text-[clamp(1.8rem,4.5vw,3rem)] font-light italic text-[#f5efe4] mb-1.5">
+            <h2 className="font-[family-name:var(--font-cormorant)] text-[clamp(1.5rem,4.5vw,3rem)] font-light italic text-[#f5efe4] mb-1.5">
               The Sacred <em>Lineage Tree</em>
             </h2>
-            <p className="font-[family-name:var(--font-cormorant)] italic text-[14px] text-[#f5efe4]/34 mb-9">
+            <p className="font-[family-name:var(--font-cormorant)] italic text-[clamp(12px,2.5vw,14px)] text-[#f5efe4]/34 mb-6 sm:mb-9">
               Tracing the musical tradition from legend to student
             </p>
             <LineageTree />
           </div>
         </section>
 
-        {/* Guru Rows */}
+        {/* Guru Rows — Section Header */}
         <section className="bg-[#f5efe4] text-[#1a1209]">
-          <div className="max-w-[980px] mx-auto py-[clamp(36px,6vw,60px)] px-[clamp(22px,6vw,52px)]">
-            <p className="text-[10px] tracking-[0.24em] uppercase text-[#b8922a] font-medium mb-4 flex items-center gap-2.5">
+          <div className="max-w-[980px] lg:max-w-[1100px] mx-auto pt-[clamp(28px,6vw,60px)] pb-[clamp(16px,3vw,32px)] px-[clamp(16px,5vw,52px)]">
+            <p className="text-[10px] tracking-[0.24em] uppercase text-[#b8922a] font-medium mb-3 sm:mb-4 flex items-center justify-center sm:justify-start gap-2.5">
               <span className="w-5 h-px bg-[#b8922a] inline-block"></span>Sacred Tradition
             </p>
-            <h2 className="font-[family-name:var(--font-cormorant)] text-[clamp(1.8rem,4.5vw,3rem)] font-light leading-[1.12] text-[#1a1209] mb-10">
+            <h2 className="font-[family-name:var(--font-cormorant)] text-[clamp(1.5rem,4.5vw,3rem)] font-light leading-[1.12] text-[#1a1209] text-center sm:text-left">
               The Gurus Who Shaped Anirban&apos;s <em>Musical Journey</em>
             </h2>
-
-            {gurus.map((guru, index) => (
-              <div
-                key={index}
-                className={`grid grid-cols-1 md:grid-cols-[130px_1fr] gap-[clamp(22px,5vw,52px)] items-start py-[clamp(28px,5vw,48px)] border-b border-[#b8922a]/15 ${
-                  index === gurus.length - 1 ? 'border-b-0' : ''
-                }`}
-              >
-                {/* Image */}
-                <div className="overflow-hidden max-w-[130px]">
-                  <div className="grid grid-cols-1 gap-2">
-                    {guru.images.map((imgSrc, imgIndex) => (
-                      <img
-                        key={imgIndex}
-                        src={imgSrc}
-                        alt={guru.name}
-                        className="w-full aspect-[3/4] object-cover object-top sepia-[0.09] hover:scale-[1.04] transition-transform duration-500"
-                        onError={(e) => { e.target.src = 'https://via.placeholder.com/400x500?text=' + encodeURIComponent(guru.name); }}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Text */}
-                <div>
-                  <p className="text-[10px] tracking-[0.2em] uppercase text-[#b8922a] mb-1.5">
-                    Guru {String(index + 1).padStart(2, '0')}
-                  </p>
-                  <h3 className="font-[family-name:var(--font-cormorant)] text-[clamp(1.4rem,3.5vw,2rem)] font-light text-[#1a1209] mb-1">
-                    {guru.name}
-                  </h3>
-                  <p className="text-[10px] uppercase tracking-[0.12em] text-[#7a6548] mb-3.5">
-                    {guru.role}
-                  </p>
-                  <span className="block w-[17px] h-px bg-[#b8922a] mb-3.5"></span>
-                  <p
-                    className="text-[13.5px] leading-[1.9] text-[#3d2e1a] font-light"
-                    dangerouslySetInnerHTML={{ __html: guru.text.replace(/<br \/>/g, '<br/><br/>') }}
-                  />
-                </div>
-              </div>
-            ))}
           </div>
         </section>
 
+        {/* Guru Rows — Alternating Dark / Light */}
+        {gurus.map((guru, index) => {
+          const isDark = index % 2 === 0;
+          return (
+            <section
+              key={index}
+              className={isDark ? 'bg-[#1a1209] text-[#f5efe4]' : 'bg-[#f5efe4] text-[#1a1209]'}
+            >
+              <div className="max-w-[980px] lg:max-w-[1100px] mx-auto py-[clamp(28px,5vw,56px)] px-[clamp(16px,5vw,52px)]">
+                <div className="grid grid-cols-1 sm:grid-cols-[100px_1fr] md:grid-cols-[130px_1fr] lg:grid-cols-[160px_1fr] gap-4 sm:gap-[clamp(18px,4vw,40px)] md:gap-[clamp(22px,5vw,52px)] items-start">
+                  {/* Image */}
+                  <div className="overflow-hidden mx-auto sm:mx-0 max-w-[100px] sm:max-w-[100px] md:max-w-[130px] lg:max-w-[160px]">
+                    <div className="grid grid-cols-1 gap-2">
+                      {guru.images.map((imgSrc, imgIndex) => (
+                        <img
+                          key={imgIndex}
+                          src={imgSrc}
+                          alt={guru.name}
+                          className="w-full aspect-[3/4] object-cover object-top sepia-[0.09] hover:scale-[1.04] transition-transform duration-500"
+                          onError={(e) => { e.target.src = 'https://via.placeholder.com/400x500?text=' + encodeURIComponent(guru.name); }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Text */}
+                  <div className="text-center sm:text-left">
+                    <p className="text-[10px] tracking-[0.2em] uppercase text-[#b8922a] mb-1.5">
+                      Guru {String(index + 1).padStart(2, '0')}
+                    </p>
+                    <h3 className={`font-[family-name:var(--font-cormorant)] text-[clamp(1.3rem,3.5vw,2rem)] font-light mb-1 ${isDark ? 'text-[#f5efe4]' : 'text-[#1a1209]'}`}>
+                      {guru.name}
+                    </h3>
+                    <p className={`text-[10px] uppercase tracking-[0.12em] mb-3 ${isDark ? 'text-[#f5efe4]/50' : 'text-[#7a6548]'}`}>
+                      {guru.role}
+                    </p>
+                    <span className="block w-[17px] h-px bg-[#b8922a] mb-3 mx-auto sm:mx-0"></span>
+                    <p
+                      className={`text-[clamp(12.5px,1.8vw,13.5px)] leading-[1.8] sm:leading-[1.9] font-light ${isDark ? 'text-[#f5efe4]/70' : 'text-[#3d2e1a]'}`}
+                      dangerouslySetInnerHTML={{ __html: guru.text.replace(/<br \/>/g, '<br/><br/>') }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </section>
+          );
+        })}
+
         {/* Footer */}
-        <footer className="bg-[#1a1209] border-t border-[#f5efe4]/4 py-10 text-center">
+        <footer className="bg-[#1a1209] border-t border-[#f5efe4]/4 py-8 sm:py-10 text-center px-4">
           <p className="text-[#f5efe4]/15 text-[10px]">
             &copy; {new Date().getFullYear()} Anirban Bhattacharjee | Preserving the Sacred Tradition
           </p>
