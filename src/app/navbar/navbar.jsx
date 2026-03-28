@@ -41,7 +41,7 @@ export default function Navbar() {
             className={`w-auto transition-all duration-300 ${scrolled ? 'h-9' : 'h-11'}`}
           />
           <span className="hidden sm:block font-[family-name:var(--font-cormorant)] italic text-[#f5efe4] text-lg tracking-wide">
-            A. Bhattacharjee
+            Anirban Bhattacharjee
           </span>
         </Link>
 

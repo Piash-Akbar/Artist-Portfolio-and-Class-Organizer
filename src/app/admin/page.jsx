@@ -201,7 +201,8 @@ export default function AdminDashboard() {
   const openEditModal = (student) => {
   setEditingStudent(student.id);
   setEditForm({
-    // displayName: student.displayName ?? "",
+    displayName: "",
+    existingDisplayName: student.displayName ?? "",
     classFee: student.classFee ?? "Not Set Yet"
   });
 };
@@ -211,7 +212,7 @@ const saveStudentChanges = async () => {
   setSaving(true);
   try {
     await updateDoc(doc(db, "users", editingStudent), {
-      displayName: editForm.displayName,
+      displayName: editForm.displayName || editForm.existingDisplayName,
       classFee: Number(editForm.classFee),
     });
 
@@ -423,8 +424,9 @@ const saveStudentChanges = async () => {
         <input
           type="text"
           value={editForm.displayName}
+          placeholder={editForm.existingDisplayName || "Enter display name"}
           onChange={(e) => setEditForm({ ...editForm, displayName: e.target.value })}
-          className="w-full p-2 rounded-sm bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] mt-1 text-sm sm:text-base"
+          className="w-full p-2 rounded-sm bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] placeholder-[#f5efe4]/30 mt-1 text-sm sm:text-base"
         />
       </label>
 
