@@ -18,6 +18,19 @@ const heroImages = [
   '/anirbanda.jpg',
 ];
 
+// Fallback videos (shown until admin adds videos to Firestore)
+const fallbackVideos = [
+  { url: 'https://www.youtube.com/embed/E84fCd7DsNQ' },
+  { url: 'https://www.youtube.com/embed/gR7UQY9RdQA' },
+  { url: 'https://www.youtube.com/embed/QvvjFYP8ds0' },
+  { url: 'https://www.youtube.com/embed/RnKsHJ4BQK8' },
+  { url: 'https://www.youtube.com/embed/VQHT88wU7zg' },
+  { url: 'https://www.youtube.com/embed/4C_W_D64hqE' },
+  { url: 'https://www.youtube.com/embed/tj1iqaApLfw' },
+  { url: 'https://www.youtube.com/embed/pSXqfoYHB_0' },
+  { url: 'https://www.youtube.com/embed/S-KMcYPjs5A' },
+];
+
 // Utility function to format date
 const formatDate = (date) => {
   try {
@@ -42,8 +55,9 @@ const formatDate = (date) => {
 export default function Portfolio() {
   const [concerts, setConcerts] = useState([]);
   const [pastConcerts, setPastConcerts] = useState([]);
+  const [videos, setVideos] = useState([]);
   const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(true); // Added loading state
+  const [isLoading, setIsLoading] = useState(true);
 
   // Fetch upcoming concerts
   useEffect(() => {
@@ -87,8 +101,19 @@ export default function Portfolio() {
       }
     };
 
+    const fetchVideos = async () => {
+      try {
+        const vQuery = query(collection(db, "videos"), orderBy("createdAt", "desc"));
+        const vSnap = await getDocs(vQuery);
+        setVideos(vSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+      } catch (err) {
+        console.error("Error fetching videos:", err);
+      }
+    };
+
     fetchConcerts();
     fetchPastConcerts();
+    fetchVideos();
   }, []);
 
   return (
@@ -228,87 +253,18 @@ export default function Portfolio() {
               Highlights
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              <iframe
-                src="https://www.youtube.com/embed/E84fCd7DsNQ?si=_ZnB4moSiCjEcP8k"
-                title="YouTube video player"
-                style={{border:0}}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                className="w-full aspect-video rounded-sm"
-              ></iframe>
-              <iframe
-                src="https://www.youtube.com/embed/gR7UQY9RdQA?si=FyE8KwgCIq35bls-"
-                title="YouTube video player"
-                style={{border:0}}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                className="w-full aspect-video rounded-sm"
-              ></iframe>
-              <iframe
-                src="https://www.youtube.com/embed/QvvjFYP8ds0?si=fmBXNCAb81VtlEdB"
-                title="YouTube video player"
-                style={{border:0}}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                className="w-full aspect-video rounded-sm"
-              ></iframe>
-              <iframe
-                src="https://www.youtube.com/embed/RnKsHJ4BQK8?si=wQkNH2EEBpL7opy_"
-                title="YouTube video player"
-                style={{border:0}}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                className="w-full aspect-video rounded-sm"
-              ></iframe>
-              <iframe
-                src="https://www.youtube.com/embed/VQHT88wU7zg?si=rNEjNJHdEmm7RD8Y"
-                title="YouTube video player"
-                style={{border:0}}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                className="w-full aspect-video rounded-sm"
-              ></iframe>
-              <iframe
-                src="https://www.youtube.com/embed/4C_W_D64hqE?si=ulNtVNscn22sJK8n"
-                title="YouTube video player"
-                style={{border:0}}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                className="w-full aspect-video rounded-sm"
-              ></iframe>
-              <iframe
-                src="https://www.youtube.com/embed/tj1iqaApLfw?si=C_rzckoGuyKFzpH5"
-                title="YouTube video player"
-                style={{border:0}}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                className="w-full aspect-video rounded-sm"
-              ></iframe>
-              <iframe
-                src="https://www.youtube.com/embed/pSXqfoYHB_0?si=fWcJF299pg4_7yr5"
-                title="YouTube video player"
-                style={{border:0}}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                className="w-full aspect-video rounded-sm"
-              ></iframe>
-              <iframe
-                src="https://www.youtube.com/embed/S-KMcYPjs5A?si=jQ0ip_u7kTU2CXcf"
-                title="YouTube video player"
-                style={{border:0}}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                className="w-full aspect-video rounded-sm"
-              ></iframe>
+              {(videos.length > 0 ? videos : fallbackVideos).map((v, i) => (
+                <iframe
+                  key={v.id || i}
+                  src={v.url}
+                  title={v.title || "YouTube video player"}
+                  style={{border:0}}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                  className="w-full aspect-video rounded-sm"
+                ></iframe>
+              ))}
             </div>
           </div>
         </section>

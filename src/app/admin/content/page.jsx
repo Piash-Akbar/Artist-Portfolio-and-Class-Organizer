@@ -36,11 +36,16 @@ export default function AdminContent() {
   const [archivedConcerts, setArchivedConcerts] = useState([]);
   const [editingArchived, setEditingArchived] = useState(null);
 
+  // Videos
+  const [videoUrl, setVideoUrl] = useState("");
+  const [videoTitle, setVideoTitle] = useState("");
+  const [videos, setVideos] = useState([]);
+
   useEffect(() => {
     if (!passcodeGate.verified) return;
     const load = async () => {
       if (!auth.currentUser) await signInAnonymously(auth);
-      await Promise.all([fetchNotices(), fetchConcerts(), fetchArchivedConcerts()]);
+      await Promise.all([fetchNotices(), fetchConcerts(), fetchArchivedConcerts(), fetchVideos()]);
       setLoading(false);
     };
     load();
@@ -167,6 +172,45 @@ export default function AdminContent() {
   const deleteArchivedConcert = async (id) => {
     await deleteDoc(doc(db, "pastConcerts", id));
     fetchArchivedConcerts();
+  };
+
+  /* ────── VIDEO HANDLERS ────── */
+  const extractEmbedUrl = (input) => {
+    const trimmed = input.trim();
+    // Already an embed URL
+    if (trimmed.includes('youtube.com/embed/')) return trimmed.split('?')[0];
+    // Standard watch URL: https://www.youtube.com/watch?v=XXXXX
+    const watchMatch = trimmed.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+    if (watchMatch) return `https://www.youtube.com/embed/${watchMatch[1]}`;
+    // Short URL: https://youtu.be/XXXXX
+    const shortMatch = trimmed.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+    if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}`;
+    return null;
+  };
+
+  const fetchVideos = async () => {
+    const q = query(collection(db, "videos"), orderBy("createdAt", "desc"));
+    const snap = await getDocs(q);
+    setVideos(snap.docs.map(d => ({ id: d.id, ...d.data(), createdAt: fmt(d.data().createdAt) })));
+  };
+
+  const addVideo = async () => {
+    const embedUrl = extractEmbedUrl(videoUrl);
+    if (!embedUrl) return setError("Invalid YouTube URL. Paste a YouTube link or embed URL.");
+    await addDoc(collection(db, "videos"), {
+      url: embedUrl,
+      title: videoTitle.trim() || "Untitled",
+      createdAt: new Date().toISOString(),
+      createdBy: "admin"
+    });
+    setVideoUrl("");
+    setVideoTitle("");
+    fetchVideos();
+  };
+
+  const deleteVideo = async (id) => {
+    await deleteDoc(doc(db, "videos", id));
+    fetchVideos();
   };
 
   const handleDateChange = (date) => {
@@ -525,11 +569,91 @@ export default function AdminContent() {
             )}
           </section>
 
+          {/* ────── ADD VIDEO ────── */}
+          <section className="mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-[family-name:var(--font-cormorant)] font-light italic mb-3 sm:mb-4 text-[#b8922a]">Add Video</h2>
+            <div className="bg-[#1a1209] border border-[#b8922a]/10 p-4 sm:p-6 rounded-sm space-y-3">
+              <input
+                placeholder="YouTube URL (watch link, short link, or embed link)"
+                value={videoUrl}
+                onChange={e => setVideoUrl(e.target.value)}
+                className="w-full p-2.5 sm:p-3 rounded bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] focus:ring-1 focus:ring-[#b8922a]/50 focus:outline-none text-sm sm:text-base"
+              />
+              <input
+                placeholder="Title (optional)"
+                value={videoTitle}
+                onChange={e => setVideoTitle(e.target.value)}
+                className="w-full p-2.5 sm:p-3 rounded bg-[#0c0905] border border-[#b8922a]/20 text-[#f5efe4] focus:ring-1 focus:ring-[#b8922a]/50 focus:outline-none text-sm sm:text-base"
+              />
+              {videoUrl && extractEmbedUrl(videoUrl) && (
+                <div className="max-w-sm">
+                  <p className="text-xs text-[#f5efe4]/30 mb-2">Preview:</p>
+                  <iframe
+                    src={extractEmbedUrl(videoUrl)}
+                    title="Preview"
+                    style={{border:0}}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    className="w-full aspect-video rounded-sm"
+                  ></iframe>
+                </div>
+              )}
+              <button
+                onClick={addVideo}
+                disabled={!videoUrl.trim()}
+                className={`w-full py-2 rounded-lg font-medium hover:cursor-pointer text-sm sm:text-base ${
+                  videoUrl.trim()
+                    ? "bg-[#b8922a] hover:bg-[#d4aa4a] text-[#0c0905]"
+                    : "bg-[#f5efe4]/10 text-[#f5efe4]/30"
+                }`}
+              >
+                Add Video
+              </button>
+            </div>
+          </section>
+
+          {/* ────── MANAGE VIDEOS ────── */}
+          <section className="mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-[family-name:var(--font-cormorant)] font-light italic mb-3 sm:mb-4 text-[#b8922a]">Videos ({videos.length})</h2>
+            {videos.length === 0 ? (
+              <p className="text-[#f5efe4]/50 italic text-sm sm:text-base">No videos added yet.</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {videos.map((v, i) => (
+                  <div
+                    key={v.id}
+                    className="bg-[#1a1209] border border-[#b8922a]/10 p-3 rounded-sm fade"
+                    style={{ animationDelay: `${i * 60}ms` }}
+                  >
+                    <iframe
+                      src={v.url}
+                      title={v.title}
+                      style={{border:0}}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      className="w-full aspect-video rounded-sm mb-2"
+                    ></iframe>
+                    <div className="flex justify-between items-center">
+                      <div className="min-w-0">
+                        <p className="text-sm truncate">{v.title}</p>
+                        <p className="text-xs text-[#f5efe4]/30">{v.createdAt}</p>
+                      </div>
+                      <button
+                        onClick={() => deleteVideo(v.id)}
+                        className="border border-[#f5efe4]/15 text-[#f5efe4]/40 hover:border-[#f5efe4]/30 hover:text-[#f5efe4]/60 px-3 py-1 rounded text-sm hover:cursor-pointer shrink-0 ml-2"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12">
             <button onClick={handleLogout} className="text-[#b8922a] bg-[#1a1209] border border-[#b8922a]/25 px-4 py-2 rounded-sm hover:cursor-pointer text-sm sm:text-base">Logout</button>
             <button
               onClick={() => router.push("/admin")}
-              className="bg-[#b8922a] hover:bg-[#d4aa4a] text-[#0c0905] px-6 py-2 rounded-lg font-medium hover:from-amber-500 hover:cursor-pointer hover:to-pink-600 text-sm sm:text-base"
+              className="bg-[#b8922a] hover:bg-[#d4aa4a] text-[#0c0905] px-6 py-2 rounded-lg font-medium hover:cursor-pointer text-sm sm:text-base"
             >
               Back to Dashboard
             </button>
