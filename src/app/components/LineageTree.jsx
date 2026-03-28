@@ -299,6 +299,15 @@ export default function LineageTree() {
       return second;
     };
 
+    // --- SVG coordinate helper (declared early so touch handlers can use it) ---
+    const getSVGPoint = (clientX, clientY) => {
+      const rect = svg.getBoundingClientRect();
+      return {
+        x: (clientX - rect.left) * (VB_W / rect.width),
+        y: (clientY - rect.top) * (VB_H / rect.height),
+      };
+    };
+
     // --- Draw node helper ---
     const drawNode = (node, radius, tier, index) => {
       const g = el('g');
@@ -415,14 +424,44 @@ export default function LineageTree() {
         svg.querySelectorAll('.lt-path').forEach(p => { p.classList.remove('dim', 'glow'); });
       });
 
-      // --- Drag handler (left-click and hold to pull) ---
+      // --- Drag handler (left-click / touch and hold to pull) ---
       g.addEventListener('mousedown', (e) => {
-        if (e.button !== 0) return; // left click only
+        if (e.button !== 0) return;
         e.preventDefault();
         draggedNodeId = node.id;
         nodeScale[node.id] = 1.15;
         g.classList.add('dragging');
       });
+
+      g.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const pt = getSVGPoint(touch.clientX, touch.clientY);
+        mouseX = pt.x;
+        mouseY = pt.y;
+        draggedNodeId = node.id;
+        nodeScale[node.id] = 1.15;
+        g.classList.add('dragging');
+
+        // Trigger highlight (same as mouseenter)
+        hoveredNodeId = node.id;
+        ring.setAttribute('stroke', GOLD_LIGHT);
+        ring.setAttribute('stroke-width', '2.5');
+        ring.style.filter = `drop-shadow(0 0 6px ${GOLD_LIGHT})`;
+        const { hitNodes, hitPaths } = traceToAnirban(node.id);
+        Object.entries(nodeGroups).forEach(([nid, ng]) => {
+          if (!hitNodes.has(nid)) ng.classList.add('dim');
+        });
+        svg.querySelectorAll('.lt-path').forEach(p => p.classList.add('dim'));
+        hitPaths.forEach(p => { p.classList.remove('dim'); p.classList.add('glow'); });
+        hitNodes.forEach(nid => {
+          const ng = nodeGroups[nid];
+          if (ng && nid !== node.id) {
+            ng.classList.remove('dim');
+            nodeScale[nid] = 1.06;
+          }
+        });
+      }, { passive: false });
     };
 
     // --- Draw all nodes ---
@@ -535,22 +574,40 @@ export default function LineageTree() {
       aG.classList.add('dragging');
     });
 
-    // --- SVG mouse tracking ---
-    const getSVGPoint = (e) => {
-      const rect = svg.getBoundingClientRect();
-      return {
-        x: (e.clientX - rect.left) * (VB_W / rect.width),
-        y: (e.clientY - rect.top) * (VB_H / rect.height),
-      };
-    };
+    aG.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const pt = getSVGPoint(touch.clientX, touch.clientY);
+      mouseX = pt.x;
+      mouseY = pt.y;
+      draggedNodeId = 'anirban';
+      hoveredNodeId = 'anirban';
+      nodeScale['anirban'] = 1.1;
+      aG.classList.add('dragging');
+      glowRing.setAttribute('stroke-width', '5');
+      glowRing.style.filter = `drop-shadow(0 0 10px ${GOLD_LIGHT})`;
+      Object.keys(nodeGroups).forEach(nid => { nodeScale[nid] = 1.06; });
+      nodeScale['anirban'] = 1.1;
+      svg.querySelectorAll('.lt-path').forEach(p => p.classList.add('glow'));
+    }, { passive: false });
 
+    // --- SVG mouse & touch tracking ---
     svg.addEventListener('mousemove', (e) => {
-      const pt = getSVGPoint(e);
+      const pt = getSVGPoint(e.clientX, e.clientY);
       mouseX = pt.x;
       mouseY = pt.y;
     });
 
-    // Release drag on mouseup (listen on window so it works even if mouse leaves SVG)
+    svg.addEventListener('touchmove', (e) => {
+      if (!draggedNodeId) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      const pt = getSVGPoint(touch.clientX, touch.clientY);
+      mouseX = pt.x;
+      mouseY = pt.y;
+    }, { passive: false });
+
+    // Release drag on mouseup / touchend
     const resetDrag = () => {
       if (!draggedNodeId) return;
       const g = nodeGroups[draggedNodeId];
@@ -574,6 +631,8 @@ export default function LineageTree() {
     };
 
     window.addEventListener('mouseup', resetDrag);
+    window.addEventListener('touchend', resetDrag);
+    window.addEventListener('touchcancel', resetDrag);
 
     svg.addEventListener('mouseleave', () => {
       if (draggedNodeId) return; // keep dragging even outside SVG until mouseup
@@ -671,6 +730,8 @@ export default function LineageTree() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
       window.removeEventListener('mouseup', resetDrag);
+      window.removeEventListener('touchend', resetDrag);
+      window.removeEventListener('touchcancel', resetDrag);
     };
   }, []);
 
